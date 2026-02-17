@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Crypto Lab</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="sidebar">
+  <h3>CRYPTO LAB</h3>
+  <div class="dropdown" id="exercise1">
+    <button class="dropdown-toggle" onclick="toggleDropdown('exercise1')">Exercise 1</button>
+    <div class="dropdown-menu">
+      <button class="topic-btn" onclick="selectTopic('vig','Vigenère', this)">Vigenère</button>
+      <button class="topic-btn" onclick="selectTopic('aff','Affine', this)">Affine</button>
+      <button class="topic-btn" onclick="selectTopic('pf','Playfair', this)">Playfair</button>
+      <button class="topic-btn" onclick="selectTopic('fermat','Fermat', this)">Fermat</button>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- Vigenere -->
+<div id="vig" class="cipher-box">
+<h2>Vigenère Cipher</h2>
+<label>Text</label>
+<textarea id="vigText"></textarea>
+<label>Key</label>
+<input id="vigKey">
+<button class="action" onclick="vigEncrypt()">Encrypt</button>
+<button class="action" onclick="vigDecrypt()">Decrypt</button>
+<div class="output" id="vigOut"></div>
+</div>
+
+<!-- Affine -->
+<div id="aff" class="cipher-box">
+<h2>Affine Cipher</h2>
+<label>Text</label>
+<textarea id="affText"></textarea>
+<label>a</label>
+<input id="aKey" type="number">
+<label>b</label>
+<input id="bKey" type="number">
+<button class="action" onclick="affEncrypt()">Encrypt</button>
+<button class="action" onclick="affDecrypt()">Decrypt</button>
+<div class="output" id="affOut"></div>
+</div>
+
+<!-- Playfair -->
+<div id="pf" class="cipher-box">
+<h2>Playfair Cipher</h2>
+<label>Text</label>
+<textarea id="pfText"></textarea>
+<label>Key</label>
+<input id="pfKey">
+<button class="action" onclick="pfEncrypt()">Encrypt</button>
+<div class="output" id="pfOut"></div>
+</div>
+
+<!-- Fermat -->
+<div id="fermat" class="cipher-box">
+<h2>Fermat's Little Theorem</h2>
+<label>a</label>
+<input type="number" id="fermatA">
+<label>Prime p</label>
+<input type="number" id="fermatP">
+<button class="action" onclick="runFermat()">Verify</button>
+<div class="output" id="fermatResult"></div>
+<div class="output" id="fermatSteps"></div>
+</div>
+
+</div>
+
+<script src="js/main.js"></script>
+<script src="js/vigenere.js"></script>
+<script src="js/affine.js"></script>
+<script src="js/playfair.js"></script>
+<script src="js/fermat.js"></script>
+
+</body>
+</html>

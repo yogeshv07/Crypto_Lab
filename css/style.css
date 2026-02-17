@@ -1,0 +1,104 @@
+:root {
+  --bg-main: #f4f6f8;
+  --bg-sidebar: #1f2937;
+  --bg-card: #ffffff;
+  --accent: #2563eb;
+  --accent-hover: #1e40af;
+  --border: #d1d5db;
+  --text-light: #e5e7eb;
+}
+
+body {
+  margin: 0;
+  font-family: Arial;
+  display: flex;
+  height: 100vh;
+  background: var(--bg-main);
+}
+
+.sidebar {
+  width: 240px;
+  background: var(--bg-sidebar);
+  padding: 20px;
+  color: var(--text-light);
+}
+
+.sidebar button {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  background: transparent;
+  color: var(--text-light);
+  border: 1px solid #374151;
+  cursor: pointer;
+}
+
+.sidebar button:hover {
+  background: var(--accent);
+}
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  display: none;
+  margin-top: 8px;
+}
+
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+.dropdown.open .dropdown-menu {
+  display: block;
+}
+
+.dropdown-toggle {
+  font-weight: 600;
+}
+
+.dropdown-menu .topic-btn {
+  margin: 6px 0;
+  border-color: #334155;
+}
+
+.dropdown-menu .topic-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.content {
+  flex: 1;
+  padding: 30px;
+}
+
+.cipher-box {
+  display: none;
+  background: var(--bg-card);
+  padding: 25px;
+  border-radius: 10px;
+}
+
+textarea, input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+}
+
+button.action {
+  margin-top: 15px;
+  padding: 10px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.output {
+  margin-top: 15px;
+  background: #f9fafb;
+  padding: 10px;
+  white-space: pre-wrap;
+  font-family: monospace;
+}

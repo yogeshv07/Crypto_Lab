@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DES · AES · Classical · RSA · complete step‑by‑step</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #f8fafc;
+            font-family: 'Segoe UI', Roboto, monospace;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+        .app {
+            display: flex;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        .sidebar {
+            width: 260px;
+            background: #ffffff;
+            border-right: 1px solid #dbe4f0;
+            padding: 1.5rem 0.75rem;
+            flex-shrink: 0;
+            height: 100vh;
+            overflow-y: auto;
+            position: sticky;
+            top: 0;
+        }
+        .sidebar h2 {
+            color: #1e3a5f;
+            border-bottom: 1px solid #dbe4f0;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.2rem;
+            font-weight: 500;
+        }
+        .ex-header {
+            background: #eef4fb;
+            border: 1px solid #d3e0ef;
+            padding: 0.7rem 1rem;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+            margin: 0.5rem 0;
+            font-weight: 600;
+            color: #1f3a56;
+        }
+        .submenu {
+            margin-left: 1rem;
+            border-left: 2px solid #c8d8ea;
+            padding-left: 0.5rem;
+            display: none;
+        }
+        .submenu.show { display: block; }
+        .cipher-btn {
+            width: 100%;
+            background: transparent;
+            border: none;
+            text-align: left;
+            padding: 0.5rem 0.8rem;
+            color: #4b5d73;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+        .cipher-btn:hover { background: #e8f1fb; color: #0f172a; }
+        .cipher-btn.active {
+            background: #dbeafe;
+            border-left: 4px solid #2563eb;
+            color: #0f172a;
+        }
+        .main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+        }
+        .header-panel {
+            background: #ffffff;
+            border: 1px solid #dbe4f0;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+        }
+        .header-panel h1 { color: #1d4ed8; font-size: 1.8rem; font-weight: 600; }
+        .header-row { display: flex; gap: 2rem; color: #64748b; margin-top: 0.5rem; }
+        .cipher-box {
+            background: #ffffff;
+            border: 1px solid #dbe4f0;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-top: 1.5rem;
+            display: none;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+        }
+        .cipher-box.active { display: block; }
+        h3 { color: #1d4ed8; font-size: 1.8rem; margin-bottom: 1.2rem; border-bottom: 1px solid #dbe4f0; padding-bottom: 0.5rem; }
+        label { display: block; color: #475569; text-transform: uppercase; font-size: 0.8rem; margin: 1rem 0 0.2rem; }
+        input, textarea, select {
+            width: 100%;
+            background: #f8fbff;
+            border: 1px solid #cbd5e1;
+            color: #0f172a;
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+        }
+        .btn-group { display: flex; gap: 0.8rem; flex-wrap: wrap; margin: 1.5rem 0; }
+        button {
+            background: #e2e8f0;
+            border: 1px solid #cbd5e1;
+            color: #0f172a;
+            padding: 0.7rem 1.8rem;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        button.primary { background: #2563eb; border-color: #1d4ed8; color: white; }
+        .steps-panel {
+            background: #f8fbff;
+            border: 1px solid #d7e3f1;
+            border-radius: 8px;
+            padding: 1.5rem;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            max-height: 700px;
+            overflow: auto;
+            margin: 1.5rem 0;
+        }
+        .result-box {
+            background: #f0fdf4;
+            border-left: 4px solid #16a34a;
+            padding: 1rem;
+            font-weight: bold;
+        }
+        .matrix-display {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            background: #eef4fb;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 8px 0;
+            font-family: 'Courier New', monospace;
+        }
+        .matrix-cell {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            text-align: center;
+            padding: 4px;
+            border-radius: 4px;
+        }
+        .key-row { background: #fff7ed; padding: 0.8rem; margin: 0.5rem 0; border-left: 6px solid #f59e0b; }
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; background: #ffffff; }
+        th, td { border: 1px solid #cbd5e1; padding: 6px; text-align: center; color: #1e293b; }
+        th { background: #e8f1fb; }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="sidebar">
+        <h2> Cipher Exercises</h2>
+        <div class="ex-group">
+            <div class="ex-header" onclick="toggleSub(this)">Ex1: Classical  <span class="arrow">▼</span></div>
+            <div class="submenu show">
+                <button class="cipher-btn" onclick="showCipher('vigenere')">Vigenère</button>
+                <button class="cipher-btn" onclick="showCipher('affine')">Affine</button>
+                <button class="cipher-btn" onclick="showCipher('playfair')">Playfair</button>
+                <button class="cipher-btn" onclick="showCipher('fermat')">Fermat</button>
+                <button class="cipher-btn" onclick="showCipher('euclid')">Extended Euclid</button>
+            </div>
+        </div>
+        <div class="ex-group">
+            <div class="ex-header" onclick="toggleSub(this)">Ex2: Block Ciphers  <span class="arrow">▼</span></div>
+            <div class="submenu show">
+                <button class="cipher-btn" onclick="showCipher('des')">DES (16 rounds)</button>
+                <button class="cipher-btn" onclick="showCipher('aes')">AES-128 (10 rounds)</button>
+            </div>
+        </div>
+        <div class="ex-group">
+            <div class="ex-header" onclick="toggleSub(this)">Ex3: RSA <span class="arrow">▼</span></div>
+            <div class="submenu show">
+                <!-- Replaced the two placeholder buttons with one full RSA button -->
+                <button class="cipher-btn" onclick="showCipher('rsa')">RSA </button>
+            </div>
+        </div>
+        <div class="ex-group">
+            <div class="ex-header" onclick="toggleSub(this)">Ex4: Diffie-Hellman <span class="arrow">▼</span></div>
+            <div class="submenu show">
+                <button class="cipher-btn" onclick="showCipher('diffie')">Key Exchange</button>
+            </div>
+        </div>
+        <div class="ex-group">
+            <div class="ex-header" onclick="toggleSub(this)">Ex5: Hash Functions <span class="arrow">▼</span></div>
+            <div class="submenu show">
+                <button class="cipher-btn" onclick="showCipher('md5')">MD5</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="main">
+        <div class="header-panel">
+            <h1>23CS681 CRYPTOGRAPHY & NETWORK SECURITY</h1>
+                </div>
+
+        <!-- ========== EX1: CLASSICAL  ========== -->
+        <!-- Vigenère -->
+        <div id="vigenere-box" class="cipher-box">
+            <h3>Vigenère Cipher</h3>
+            <label>Plaintext</label><input id="vig-text" value="CIPHER">
+            <label>Key (letters only)</label><input id="vig-key" value="KEY">
+            <button class="primary" onclick="vigenereEncrypt()">Encrypt</button>
+            <button onclick="vigenereDecrypt()">Decrypt</button>
+            <div id="vig-steps" class="steps-panel">// Vigenère steps</div>
+            <div id="vig-out" class="result-box">Result: </div>
+        </div>
+
+        <!-- Affine -->
+        <div id="affine-box" class="cipher-box">
+            <h3>Affine Cipher (encrypt only)</h3>
+            <label>a (must be coprime to 26)</label><input id="aff-a" value="9">
+            <label>b</label><input id="aff-b" value="6">
+            <label>Plaintext (A-Z)</label><textarea id="aff-text" rows="2">HELLO</textarea>
+            <button class="primary" onclick="affineEncrypt()">Encrypt</button>
+            <div id="aff-steps" class="steps-panel">// Affine steps</div>
+            <div id="aff-out" class="result-box">Result: </div>
+        </div>
+
+        <!-- Playfair -->
+        <div id="playfair-box" class="cipher-box">
+            <h3>Playfair Cipher (5x5 matrix)</h3>
+            <label>Keyword</label><input id="pf-key" value="MONARCHY">
+            <label>Plaintext (A-Z, no J)</label><textarea id="pf-text" rows="2">INSTRUMENTS</textarea>
+            <button class="primary" onclick="playfairEncrypt()">Encrypt</button>
+            <div id="pf-matrix" class="matrix-display"></div>
+            <div id="pf-steps" class="steps-panel">// Playfair steps</div>
+            <div id="pf-out" class="result-box">Result: </div>
+        </div>
+
+        <!-- Fermat -->
+        <div id="fermat-box" class="cipher-box">
+            <h3>Fermat's Little Theorem</h3>
+            <label>Prime p</label><input id="fer-p" value="13">
+            <label>Integer a (not multiple of p)</label><input id="fer-a" value="5">
+            <button class="primary" onclick="fermatCalc()">Compute a^(p-1) mod p</button>
+            <div id="fer-steps" class="steps-panel">// Fermat steps</div>
+            <div id="fer-out" class="result-box">Result: </div>
+        </div>
+
+        <!-- Extended Euclid -->
+        <div id="euclid-box" class="cipher-box">
+            <h3>Extended Euclidean Algorithm</h3>
+            <label>a</label><input id="euc-a" value="5432">
+            <label>b</label><input id="euc-b" value="46">
+            <button class="primary" onclick="computeEuclid()">Compute GCD & coefficients</button>
+            <div id="euc-steps" class="steps-panel">// Extended Euclid steps</div>
+            <div id="euc-out" class="result-box">Result: </div>
+        </div>
+
+        <!-- ========== EX2: DES  ========== -->
+        <div id="des-box" class="cipher-box active">
+            <h3>DES – 16 rounds </h3>
+            <div style="display:flex; gap:1rem;">
+                <div style="flex:2"><label>Key (16 hex)</label><input id="des-key" value="133457799bbcdff1"></div>
+                <div style="flex:1"><label>Mode</label><select id="des-mode"><option value="encrypt">Encrypt</option><option value="decrypt">Decrypt</option></select></div>
+            </div>
+            <label>Plaintext (8 chars) / cipher hex</label><textarea id="des-input" rows="2">ABCDEFGH</textarea>
+            <div class="btn-group">
+                <button class="primary" onclick="runDesFullTrace()">▶ Run DES full trace</button>
+                <button onclick="resetDesTrace()">Reset</button>
+            </div>
+            <div id="des-steps" class="steps-panel">// DES step dump will appear here</div>
+            <div id="des-out" class="result-box">Result: </div>
+        </div>
+
+        <!-- ========== EX2: AES-128  ========== -->
+        <div id="aes-box" class="cipher-box">
+            <h3>AES-128 – 10 rounds </h3>
+            <div style="display:flex; gap:1rem;">
+                <div style="flex:2"><label>Key (32 hex)</label><input id="aes-key" value="2b7e151628aed2a6abf7158809cf4f3c"></div>
+                <div style="flex:1"><label>Mode</label><select id="aes-mode"><option value="encrypt">Encrypt</option><option value="decrypt">Decrypt</option></select></div>
+            </div>
+            <label>Plaintext (16 bytes) / cipher hex</label><textarea id="aes-input" rows="2">Hello, AES-128!</textarea>
+            <div class="btn-group">
+                <button class="primary" onclick="runAesFullTrace()">▶ Run AES full trace</button>
+                <button onclick="resetAesTrace()">Reset</button>
+            </div>
+            <div id="aes-steps" class="steps-panel">// AES step dump (matrix & MixColumns detail) will appear here</div>
+            <div id="aes-out" class="result-box">Result: </div>
+        </div>
+
+        <!-- ========== EX3: RSA  ========== -->
+        <div id="rsa-box" class="cipher-box">
+            <h3>RSA </h3>
+            <label>Prime p</label><input id="rsa-p" value="61">
+            <label>Prime q</label><input id="rsa-q" value="53">
+            <label>Select e (coprime to φ)</label><input id="rsa-e" value="17">
+            <label>Message (number or text)</label><textarea id="rsa-m" rows="2">HELLO</textarea>
+            <button class="primary" onclick="runRSA()">▶ Run RSA full trace</button>
+            <div id="rsa-steps" class="steps-panel">// RSA steps will appear here</div>
+            <div id="rsa-out" class="result-box">Result: </div>
+        </div>
+
+        <!-- ========== EX4: DIFFIE-HELLMAN ========== -->
+        <div id="diffie-box" class="cipher-box">
+            <h3>Diffie-Hellman Key Exchange</h3>
+            <label>Public Prime (P)</label><input id="dh-p" value="23">
+            <label>Primitive Root (G)</label><input id="dh-g" value="5">
+            <label>Alice's Private Key (a)</label><input id="dh-a" value="6">
+            <label>Bob's Private Key (b)</label><input id="dh-b" value="15">
+            <div class="btn-group">
+                <button class="primary" onclick="runDiffieHellman()">Exchange Keys</button>
+                <button onclick="resetDiffieHellman()">Reset</button>
+            </div>
+            <div id="dh-steps" class="steps-panel">// Diffie-Hellman steps will appear here</div>
+            <div id="dh-out" class="result-box">Result: </div>
+        </div>
+
+        <!-- ========== EX5: MD5 ========== -->
+        <div id="md5-box" class="cipher-box">
+            <h3>MD5 Hash Function</h3>
+            <label>Message to Hash</label><input id="md5-message" value="hello world">
+            <button class="primary" onclick="computeMD5()">Compute MD5 Hash</button>
+            <div id="md5-steps" class="steps-panel">// MD5 steps</div>
+            <div id="md5-out" class="result-box">Result: </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // MD5 constants
+    const S = [
+        7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
+        5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
+        4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
+        6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21
+    ];
+
+    const K = [
+        0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
+        0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
+        0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
+        0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
+        0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa,
+        0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
+        0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed,
+        0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a,
+        0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c,
+        0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70,
+        0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05,
+        0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665,
+        0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039,
+        0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
+        0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
+        0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
+    ];
+
+    function leftRotate(value, amount) {
+        return ((value << amount) | (value >>> (32 - amount))) & 0xFFFFFFFF;
+    }
+
+    function md5Hash(message, showSteps = true) {
+        let steps = showSteps ? [] : null;
+
+        // Convert message to bytes
+        let msgBytes = new TextEncoder().encode(message);
+        let msgLen = msgBytes.length;
+
+        // Step 1: Append padding
+        let padded = new Uint8Array(Math.floor((msgLen + 8) / 64 + 1) * 64);
+        padded.set(msgBytes);
+        padded[msgLen] = 0x80;
+
+        // Append length in bits (little-endian)
+        let lenBits = msgLen * 8;
+        for (let i = 0; i < 8; i++) {
+            padded[padded.length - 8 + i] = (lenBits >>> (i * 8)) & 0xFF;
+        }
+
+        if (showSteps) {
+            steps.push("Step 1: Padding the message");
+            steps.push(`Original message length: ${msgLen} bytes`);
+            steps.push(`Padded message length: ${padded.length} bytes`);
+        }
+
+        // Initialize MD5 state
+        let h0 = 0x67452301;
+        let h1 = 0xefcdab89;
+        let h2 = 0x98badcfe;
+        let h3 = 0x10325476;
+
+        if (showSteps) {
+            steps.push("Step 2: Initialize MD5 state");
+            steps.push(`h0 = ${h0.toString(16).padStart(8, '0')}`);
+            steps.push(`h1 = ${h1.toString(16).padStart(8, '0')}`);
+            steps.push(`h2 = ${h2.toString(16).padStart(8, '0')}`);
+            steps.push(`h3 = ${h3.toString(16).padStart(8, '0')}`);
+        }
+
+        // Process in 512-bit chunks
+        for (let chunkStart = 0; chunkStart < padded.length; chunkStart += 64) {
+            let chunk = padded.slice(chunkStart, chunkStart + 64);
+            let w = new Array(16);
+            for (let i = 0; i < 16; i++) {
+                w[i] = (chunk[i*4]) | (chunk[i*4+1] << 8) | (chunk[i*4+2] << 16) | (chunk[i*4+3] << 24);
+            }
+
+            if (showSteps) {
+                steps.push(`\nProcessing chunk ${chunkStart/64 + 1}`);
+                steps.push("Message schedule (w[0..15]):");
+                for (let i = 0; i < 16; i++) {
+                    steps.push(`w[${i}] = ${w[i].toString(16).padStart(8, '0')}`);
+                }
+            }
+
+            let a = h0, b = h1, c = h2, d = h3;
+
+            if (showSteps) {
+                steps.push("Initial a,b,c,d for this chunk:");
+                steps.push(`a = ${a.toString(16).padStart(8, '0')}, b = ${b.toString(16).padStart(8, '0')}, c = ${c.toString(16).padStart(8, '0')}, d = ${d.toString(16).padStart(8, '0')}`);
+            }
+
+            // Main loop
+            for (let i = 0; i < 64; i++) {
+                let f, g;
+                if (i < 16) {
+                    f = (b & c) | (~b & d);
+                    g = i;
+                } else if (i < 32) {
+                    f = (d & b) | (~d & c);
+                    g = (5 * i + 1) % 16;
+                } else if (i < 48) {
+                    f = b ^ c ^ d;
+                    g = (3 * i + 5) % 16;
+                } else {
+                    f = c ^ (b | ~d);
+                    g = (7 * i) % 16;
+                }
+
+                f = (f + a + K[i] + w[g]) & 0xFFFFFFFF;
+                a = d;
+                d = c;
+                c = b;
+                b = (b + leftRotate(f, S[i])) & 0xFFFFFFFF;
+
+                if (showSteps && (i % 4 == 0 || i == 63)) {
+                    steps.push(`Round ${Math.floor(i/16) + 1}, step ${i%16 + 1}: a=${a.toString(16).padStart(8, '0')}, b=${b.toString(16).padStart(8, '0')}, c=${c.toString(16).padStart(8, '0')}, d=${d.toString(16).padStart(8, '0')}`);
+                }
+            }
+
+            // Add to result
+            h0 = (h0 + a) & 0xFFFFFFFF;
+            h1 = (h1 + b) & 0xFFFFFFFF;
+            h2 = (h2 + c) & 0xFFFFFFFF;
+            h3 = (h3 + d) & 0xFFFFFFFF;
+
+            if (showSteps) {
+                steps.push("After adding chunk:");
+                steps.push(`h0 = ${h0.toString(16).padStart(8, '0')}, h1 = ${h1.toString(16).padStart(8, '0')}, h2 = ${h2.toString(16).padStart(8, '0')}, h3 = ${h3.toString(16).padStart(8, '0')}`);
+            }
+        }
+
+        // Produce final hash
+        let digest = new Uint8Array(16);
+        digest[0] = h0 & 0xFF; digest[1] = (h0 >>> 8) & 0xFF; digest[2] = (h0 >>> 16) & 0xFF; digest[3] = (h0 >>> 24) & 0xFF;
+        digest[4] = h1 & 0xFF; digest[5] = (h1 >>> 8) & 0xFF; digest[6] = (h1 >>> 16) & 0xFF; digest[7] = (h1 >>> 24) & 0xFF;
+        digest[8] = h2 & 0xFF; digest[9] = (h2 >>> 8) & 0xFF; digest[10] = (h2 >>> 16) & 0xFF; digest[11] = (h2 >>> 24) & 0xFF;
+        digest[12] = h3 & 0xFF; digest[13] = (h3 >>> 8) & 0xFF; digest[14] = (h3 >>> 16) & 0xFF; digest[15] = (h3 >>> 24) & 0xFF;
+
+        let hashHex = Array.from(digest, b => b.toString(16).padStart(2, '0')).join('');
+
+        if (showSteps) {
+            steps.push("\nFinal MD5 hash:");
+            steps.push(hashHex);
+        }
+
+        return { hash: hashHex, steps: steps };
+    }
+
+    function computeMD5() {
+        let message = document.getElementById('md5-message').value;
+        let result = md5Hash(message);
+        document.getElementById('md5-steps').innerText = result.steps.join('\n');
+        document.getElementById('md5-out').innerText = 'MD5 Hash: ' + result.hash;
+    }
+
+    // ---------- SIDEBAR HELPERS ----------
+    function toggleSub(header) {
+        let s = header.nextElementSibling;
+        s.classList.toggle('show');
+        header.querySelector('.arrow').textContent = s.classList.contains('show') ? '▼' : '▶';
+    }
+    function showCipher(name) {
+        document.querySelectorAll('.cipher-box').forEach(b => b.classList.remove('active'));
+        document.getElementById(name + '-box')?.classList.add('active');
+        document.querySelectorAll('.cipher-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        let names = {
+            vigenere: 'Vigenère', affine: 'Affine', playfair: 'Playfair',
+            fermat: 'Fermat', euclid: 'Euclid', des: 'DES (full trace)', aes: 'AES-128',
+            rsa: 'RSA (full step‑by‑step)', md5: 'MD5'
+        };
+        document.getElementById('current-ex').innerText =
+            name === 'diffie' ? 'Diffie-Hellman Key Exchange' : (names[name] || name);
+    }
+
+    // ############################################################
+    // # EX1: CLASSICAL CIPHERS 
+    // ############################################################
+
+    // ---------- Vigenère ----------
+    function vigenereEncrypt() {
+        let text = document.getElementById('vig-text').value.toUpperCase().replace(/[^A-Z]/g, '');
+        let key = document.getElementById('vig-key').value.toUpperCase().replace(/[^A-Z]/g, '');
+        if (!key) { alert('Invalid key'); return; }
+        let steps = 'Vigenère encryption:\nText: ' + text + '\nKey: ' + key + '\n\n';
+        let result = '';
+        for (let i = 0; i < text.length; i++) {
+            let t = text.charCodeAt(i) - 65;
+            let k = key.charCodeAt(i % key.length) - 65;
+            let c = (t + k) % 26;
+            result += String.fromCharCode(c + 65);
+            steps += `${text[i]} (${t}) + ${key[i % key.length]} (${k}) = ${c} → ${result[i]}\n`;
+        }
+        document.getElementById('vig-steps').innerText = steps;
+        document.getElementById('vig-out').innerText = 'Ciphertext: ' + result;
+    }
+    function vigenereDecrypt() {
+        let text = document.getElementById('vig-text').value.toUpperCase().replace(/[^A-Z]/g, '');
+        let key = document.getElementById('vig-key').value.toUpperCase().replace(/[^A-Z]/g, '');
+        if (!key) { alert('Invalid key'); return; }
+        let steps = 'Vigenère decryption:\nCipher: ' + text + '\nKey: ' + key + '\n\n';
+        let result = '';
+        for (let i = 0; i < text.length; i++) {
+            let c = text.charCodeAt(i) - 65;
+            let k = key.charCodeAt(i % key.length) - 65;
+            let p = (c - k + 26) % 26;
+            result += String.fromCharCode(p + 65);
+            steps += `${text[i]} (${c}) - ${key[i % key.length]} (${k}) = ${p} → ${result[i]}\n`;
+        }
+        document.getElementById('vig-steps').innerText = steps;
+        document.getElementById('vig-out').innerText = 'Plaintext: ' + result;
+    }
+
+    // ---------- Affine ----------
+    function affineEncrypt() {
+        let a = parseInt(document.getElementById('aff-a').value);
+        let b = parseInt(document.getElementById('aff-b').value);
+        let text = document.getElementById('aff-text').value.toUpperCase().replace(/[^A-Z]/g, '');
+        if (!text) return;
+        function gcd(x,y) { return y ? gcd(y, x % y) : x; }
+        if (gcd(a,26) !== 1) { alert('a must be coprime to 26'); return; }
+        let steps = `Affine encryption: E(x) = (${a}*x + ${b}) mod 26\n\n`;
+        let result = '';
+        for (let i = 0; i < text.length; i++) {
+            let x = text.charCodeAt(i) - 65;
+            let val = (a * x + b) % 26;
+            result += String.fromCharCode(val + 65);
+            steps += `${text[i]} (x=${x}) → (${a}*${x}+${b}) mod 26 = ${val} → ${result[i]}\n`;
+        }
+        document.getElementById('aff-steps').innerText = steps;
+        document.getElementById('aff-out').innerText = 'Ciphertext: ' + result;
+    }
+
+    // ---------- Playfair ----------
+    function playfairEncrypt() {
+        let key = document.getElementById('pf-key').value.toUpperCase().replace(/[^A-Z]/g, '').replace(/J/g, 'I');
+        let plain = document.getElementById('pf-text').value.toUpperCase().replace(/[^A-Z]/g, '').replace(/J/g, 'I');
+        if (!key || !plain) return;
+
+        let seen = new Set();
+        let matrix = [];
+        let all = key + 'ABCDEFGHIKLMNOPQRSTUVWXYZ';
+        for (let ch of all) {
+            if (!seen.has(ch) && ch >= 'A' && ch <= 'Z' && ch !== 'J') {
+                seen.add(ch);
+                matrix.push(ch);
+            }
+        }
+        let matHtml = '';
+        for (let r = 0; r < 5; r++) {
+            for (let c = 0; c < 5; c++) {
+                matHtml += `<div class="matrix-cell">${matrix[r*5 + c]}</div>`;
+            }
+        }
+        document.getElementById('pf-matrix').innerHTML = matHtml;
+
+        let pairs = [];
+        for (let i = 0; i < plain.length; i += 2) {
+            let a = plain[i];
+            let b = (i+1 < plain.length) ? plain[i+1] : 'X';
+            if (a === b) b = 'X';
+            pairs.push([a, b]);
+        }
+
+        let steps = 'Playfair matrix built.\n\nDigraphs:\n';
+        let result = '';
+        for (let [a,b] of pairs) {
+            steps += `${a}${b} → `;
+            let r1 = Math.floor(matrix.indexOf(a)/5), c1 = matrix.indexOf(a)%5;
+            let r2 = Math.floor(matrix.indexOf(b)/5), c2 = matrix.indexOf(b)%5;
+            let na, nb;
+            if (r1 === r2) {
+                na = matrix[r1*5 + (c1+1)%5];
+                nb = matrix[r2*5 + (c2+1)%5];
+            } else if (c1 === c2) {
+                na = matrix[((r1+1)%5)*5 + c1];
+                nb = matrix[((r2+1)%5)*5 + c2];
+            } else {
+                na = matrix[r1*5 + c2];
+                nb = matrix[r2*5 + c1];
+            }
+            result += na + nb;
+            steps += `${na}${nb}\n`;
+        }
+        document.getElementById('pf-steps').innerText = steps;
+        document.getElementById('pf-out').innerText = 'Ciphertext: ' + result;
+    }
+
+    // ---------- Fermat ----------
+    function fermatCalc() {
+        let p = parseInt(document.getElementById('fer-p').value);
+        let a = parseInt(document.getElementById('fer-a').value);
+        if (p <= 1 || a % p === 0) { alert('p must be prime, a not multiple of p'); return; }
+        let steps = `Fermat: a^(p-1) ≡ 1 (mod p) for prime p\np = ${p}, a = ${a}\n\n`;
+        let exp = p-1;
+        let result = 1;
+        let base = a % p;
+        let e = exp;
+        steps += `Computing ${a}^${exp} mod ${p} using repeated squaring:\n`;
+        while (e > 0) {
+            if (e & 1) result = (result * base) % p;
+            base = (base * base) % p;
+            e >>= 1;
+        }
+        steps += `Result: ${a}^${exp} mod ${p} = ${result}\n`;
+        if (result === 1) steps += `\n✓ Fermat holds: ${a}^(${p}-1) ≡ 1 (mod ${p})`;
+        else steps += `\n✗ Not 1 – but p may not be prime.`;
+        document.getElementById('fer-steps').innerText = steps;
+        document.getElementById('fer-out').innerText = `${a}^${p-1} mod ${p} = ${result}`;
+    }
+
+    // ---------- Extended Euclid ----------
+    function computeEuclid() {
+        let a = parseInt(document.getElementById('euc-a').value);
+        let b = parseInt(document.getElementById('euc-b').value);
+        if (a < 0 || b < 0) { alert('positive integers only'); return; }
+        let steps = `Extended Euclidean Algorithm for (${a}, ${b})\n\n`;
+        let r0 = a, r1 = b, s0 = 1, s1 = 0, t0 = 0, t1 = 1;
+        steps += `i\tr\tq\ts\tt\n`;
+        steps += `0\t${r0}\t\t${s0}\t${t0}\n`;
+        steps += `1\t${r1}\t\t${s1}\t${t1}\n`;
+        let i = 2;
+        while (r1 !== 0) {
+            let q = Math.floor(r0 / r1);
+            let r2 = r0 % r1;
+            let s2 = s0 - q * s1;
+            let t2 = t0 - q * t1;
+            steps += `${i}\t${r2}\t${q}\t${s2}\t${t2}\n`;
+            r0 = r1; r1 = r2; s0 = s1; s1 = s2; t0 = t1; t1 = t2;
+            i++;
+        }
+        steps += `\nGCD = ${r0}\n`;
+        steps += `Coefficients: s = ${s0}, t = ${t0}\n`;
+        steps += `Check: ${a}*${s0} + ${b}*${t0} = ${a*s0 + b*t0}`;
+        document.getElementById('euc-steps').innerText = steps;
+        document.getElementById('euc-out').innerText = `GCD(${a},${b}) = ${r0}`;
+    }
+
+    // ############################################################
+    // # EX2: DES 
+    // ############################################################
+    const DES_IP = [58,50,42,34,26,18,10,2,60,52,44,36,28,20,12,4,62,54,46,38,30,22,14,6,64,56,48,40,32,24,16,8,57,49,41,33,25,17,9,1,59,51,43,35,27,19,11,3,61,53,45,37,29,21,13,5,63,55,47,39,31,23,15,7];
+    const DES_FP = [40,8,48,16,56,24,64,32,39,7,47,15,55,23,63,31,38,6,46,14,54,22,62,30,37,5,45,13,53,21,61,29,36,4,44,12,52,20,60,28,35,3,43,11,51,19,59,27,34,2,42,10,50,18,58,26,33,1,41,9,49,17,57,25];
+    const DES_E = [32,1,2,3,4,5,4,5,6,7,8,9,8,9,10,11,12,13,12,13,14,15,16,17,16,17,18,19,20,21,20,21,22,23,24,25,24,25,26,27,28,29,28,29,30,31,32,1];
+    const DES_P = [16,7,20,21,29,12,28,17,1,15,23,26,5,18,31,10,2,8,24,14,32,27,3,9,19,13,30,6,22,11,4,25];
+    const PC1 = [57,49,41,33,25,17,9,1,58,50,42,34,26,18,10,2,59,51,43,35,27,19,11,3,60,52,44,36,63,55,47,39,31,23,15,7,62,54,46,38,30,22,14,6,61,53,45,37,29,21,13,5,28,20,12,4];
+    const PC2 = [14,17,11,24,1,5,3,28,15,6,21,10,23,19,12,4,26,8,16,7,27,20,13,2,41,52,31,37,47,55,30,40,51,45,33,48,44,49,39,56,34,53,46,42,50,36,29,32];
+    const SHIFTS = [1,1,2,2,2,2,2,2,1,2,2,2,2,2,2,1];
+
+    function hex2bin(hex, bits) { return parseInt(hex,16).toString(2).padStart(bits,'0'); }
+
+    function runDesFullTrace() {
+        let key = document.getElementById('des-key').value.trim();
+        let input = document.getElementById('des-input').value.trim();
+        let mode = document.getElementById('des-mode').value;
+        let steps = " DES FULL TRACE \n";
+        steps += "\n>>> KEY SCHEDULE (16 subkeys) <<<\n";
+        let keyBin = '';
+        for(let i=0; i<16; i+=2) keyBin += hex2bin(key.substr(i,2),8);
+        steps += `Key bits (64): ${keyBin.match(/.{1,8}/g).join(' ')}\n`;
+        let key56 = PC1.map(i=>keyBin[i-1]).join('');
+        steps += `After PC‑1 (56 bits): ${key56.match(/.{1,7}/g).join(' ')}\n`;
+        let C = key56.slice(0,28), D = key56.slice(28);
+        steps += `C0 = ${C} , D0 = ${D}\n`;
+        let subkeys = [];
+        for(let r=1; r<=16; r++) {
+            C = C.slice(SHIFTS[r-1]) + C.slice(0,SHIFTS[r-1]);
+            D = D.slice(SHIFTS[r-1]) + D.slice(0,SHIFTS[r-1]);
+            let combined = C+D;
+            let key48 = PC2.map(i=>combined[i-1]).join('');
+            subkeys.push(key48);
+            steps += `Round ${r.toString().padStart(2)} shift ${SHIFTS[r-1]} → C${r} D${r} PC2 → subkey: ${key48.match(/.{1,6}/g).join(' ')}\n`;
+        }
+        steps += "\n\n>>> ENCRYPTION ROUNDS (IP, 16 rounds, FP) <<<\n";
+        let pt = input.padEnd(8,'\0').split('').map(c=>c.charCodeAt(0).toString(2).padStart(8,'0')).join('');
+        steps += `Plaintext bits (ASCII): ${pt.match(/.{1,8}/g).join(' ')}\n`;
+        let block = DES_IP.map(i=>pt[i-1]).join('');
+        steps += `After IP: ${block.match(/.{1,8}/g).join(' ')}\n`;
+        let L = block.slice(0,32), R = block.slice(32);
+        steps += `L0 = ${L.match(/.{1,8}/g).join(' ')}\nR0 = ${R.match(/.{1,8}/g).join(' ')}\n`;
+        for(let r=1; r<=16; r++) {
+            let key48 = subkeys[r-1];
+            steps += `\n----- ROUND ${r} -----\n`;
+            let exp = DES_E.map(i=>R[i-1]).join('');
+            steps += `Expanded R: ${exp.match(/.{1,6}/g).join(' ')}\n`;
+            let xor = '';
+            for(let i=0;i<48;i++) xor += exp[i] ^ key48[i];
+            steps += `XOR K${r} : ${xor.match(/.{1,6}/g).join(' ')}\n`;
+            let sOut = '';
+            for(let box=0; box<8; box++) {
+                let seg = xor.slice(box*6, box*6+6);
+                let row = parseInt(seg[0]+seg[5],2);
+                let col = parseInt(seg.slice(1,5),2);
+                let val = (row*16 + col) % 16;
+                sOut += val.toString(2).padStart(4,'0');
+                steps += ` S${box+1} input=${seg} row=${row} col=${col} → output ${val.toString(16).toUpperCase()} (${val.toString(2).padStart(4,'0')})\n`;
+            }
+            steps += `S‑box out (32 bits): ${sOut.match(/.{1,4}/g).join(' ')}\n`;
+            let pOut = DES_P.map(i=>sOut[i-1]).join('');
+            steps += `After P: ${pOut.match(/.{1,8}/g).join(' ')}\n`;
+            let newR = '';
+            for(let i=0;i<32;i++) newR += L[i] ^ pOut[i];
+            steps += `XOR with L → new R = ${newR.match(/.{1,8}/g).join(' ')}\n`;
+            L = R; R = newR;
+            steps += `L${r} = ${L.match(/.{1,8}/g).join(' ')}\nR${r} = ${R.match(/.{1,8}/g).join(' ')}\n`;
+        }
+        let preFinal = R + L;
+        steps += `\nBefore FP (R16+L16): ${preFinal.match(/.{1,8}/g).join(' ')}\n`;
+        let cipherBits = DES_FP.map(i=>preFinal[i-1]).join('');
+        steps += `After FP: ${cipherBits.match(/.{1,8}/g).join(' ')}\n`;
+        let cipherHex = '';
+        for(let i=0;i<64;i+=4) cipherHex += parseInt(cipherBits.slice(i,i+4),2).toString(16);
+        steps += `\n FINAL CIPHERTEXT (hex): ${cipherHex} \n`;
+        document.getElementById('des-steps').innerText = steps;
+        document.getElementById('des-out').innerText = 'Ciphertext: ' + cipherHex;
+    }
+    function resetDesTrace() {
+        document.getElementById('des-key').value = '133457799bbcdff1';
+        document.getElementById('des-input').value = 'ABCDEFGH';
+        document.getElementById('des-mode').value = 'encrypt';
+        document.getElementById('des-steps').innerText = '// DES step dump will appear here';
+        document.getElementById('des-out').innerText = 'Result: ';
+    }
+
+    // ############################################################
+    // # EX2: AES-128 
+    // ############################################################
+    const SBOX = [
+        0x63,0x7c,0x77,0x7b,0xf2,0x6b,0x6f,0xc5,0x30,0x01,0x67,0x2b,0xfe,0xd7,0xab,0x76,
+        0xca,0x82,0xc9,0x7d,0xfa,0x59,0x47,0xf0,0xad,0xd4,0xa2,0xaf,0x9c,0xa4,0x72,0xc0,
+        0xb7,0xfd,0x93,0x26,0x36,0x3f,0xf7,0xcc,0x34,0xa5,0xe5,0xf1,0x71,0xd8,0x31,0x15,
+        0x04,0xc7,0x23,0xc3,0x18,0x96,0x05,0x9a,0x07,0x12,0x80,0xe2,0xeb,0x27,0xb2,0x75,
+        0x09,0x83,0x2c,0x1a,0x1b,0x6e,0x5a,0xa0,0x52,0x3b,0xd6,0xb3,0x29,0xe3,0x2f,0x84,
+        0x53,0xd1,0x00,0xed,0x20,0xfc,0xb1,0x5b,0x6a,0xcb,0xbe,0x39,0x4a,0x4c,0x58,0xcf,
+        0xd0,0xef,0xaa,0xfb,0x43,0x4d,0x33,0x85,0x45,0xf9,0x02,0x7f,0x50,0x3c,0x9f,0xa8,
+        0x51,0xa3,0x40,0x8f,0x92,0x9d,0x38,0xf5,0xbc,0xb6,0xda,0x21,0x10,0xff,0xf3,0xd2,
+        0xcd,0x0c,0x13,0xec,0x5f,0x97,0x44,0x17,0xc4,0xa7,0x7e,0x3d,0x64,0x5d,0x19,0x73,
+        0x60,0x81,0x4f,0xdc,0x22,0x2a,0x90,0x88,0x46,0xee,0xb8,0x14,0xde,0x5e,0x0b,0xdb,
+        0xe0,0x32,0x3a,0x0a,0x49,0x06,0x24,0x5c,0xc2,0xd3,0xac,0x62,0x91,0x95,0xe4,0x79,
+        0xe7,0xc8,0x37,0x6d,0x8d,0xd5,0x4e,0xa9,0x6c,0x56,0xf4,0xea,0x65,0x7a,0xae,0x08,
+        0xba,0x78,0x25,0x2e,0x1c,0xa6,0xb4,0xc6,0xe8,0xdd,0x74,0x1f,0x4b,0xbd,0x8b,0x8a,
+        0x70,0x3e,0xb5,0x66,0x48,0x03,0xf6,0x0e,0x61,0x35,0x57,0xb9,0x86,0xc1,0x1d,0x9e,
+        0xe1,0xf8,0x98,0x11,0x69,0xd9,0x8e,0x94,0x9b,0x1e,0x87,0xe9,0xce,0x55,0x28,0xdf,
+        0x8c,0xa1,0x89,0x0d,0xbf,0xe6,0x42,0x68,0x41,0x99,0x2d,0x0f,0xb0,0x54,0xbb,0x16
+    ];
+    const RCON = [0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80,0x1b,0x36];
+
+    function hexToBytes(h) { let b=[]; for(let i=0;i<h.length;i+=2) b.push(parseInt(h.substr(i,2),16)); return b; }
+    function bytesToHex(b) { return b.map(x=>x.toString(16).padStart(2,'0')).join(''); }
+
+    function matrixString(arr, title) {
+        let s = title ? `\n${title} (col major):\n` : '';
+        for(let row=0; row<4; row++) {
+            s += ' [ ';
+            for(let col=0; col<4; col++) {
+                s += arr[row + 4*col].toString(16).padStart(2,'0') + ' ';
+            }
+            s += ']\n';
+        }
+        return s;
+    }
+
+    function mixColumn(col) {
+        let a = col.slice();
+        const xtime = (x) => ((x << 1) ^ ((x & 0x80) ? 0x1b : 0)) & 0xff;
+        let b = [
+            xtime(a[0]) ^ xtime(a[1]) ^ a[1] ^ a[2] ^ a[3],
+            a[0] ^ xtime(a[1]) ^ xtime(a[2]) ^ a[2] ^ a[3],
+            a[0] ^ a[1] ^ xtime(a[2]) ^ xtime(a[3]) ^ a[3],
+            xtime(a[0]) ^ a[0] ^ a[1] ^ a[2] ^ xtime(a[3])
+        ];
+        return b;
+    }
+
+    function runAesFullTrace() {
+        let keyHex = document.getElementById('aes-key').value.trim();
+        let input = document.getElementById('aes-input').value.trim();
+        let mode = document.getElementById('aes-mode').value;
+        let steps = " AES-128 ENHANCED TRACE \n";
+
+        steps += "\n>>> KEY EXPANSION (internal steps + subword/rotword/rcon) <<<\n";
+        let keyBytes = hexToBytes(keyHex);
+        let w = [];
+        for(let i=0;i<4;i++) w.push(keyBytes.slice(i*4,i*4+4));
+        steps += `Initial w[0..3] as 4 words:\n w0=${bytesToHex(w[0])} w1=${bytesToHex(w[1])} w2=${bytesToHex(w[2])} w3=${bytesToHex(w[3])}\n`;
+        for(let i=4;i<44;i++) {
+            let temp = w[i-1].slice();
+            if(i%4===0) {
+                let orig = temp.slice();
+                temp = [temp[1],temp[2],temp[3],temp[0]];
+                steps += ` rotword(${bytesToHex(orig)}) = ${bytesToHex(temp)}\n`;
+                let beforeSub = temp.slice();
+                temp = temp.map(b=>SBOX[b]);
+                steps += ` subword(${bytesToHex(beforeSub)}) = ${bytesToHex(temp)}\n`;
+                let rconVal = RCON[i/4-1];
+                steps += ` rcon[${i/4}] = 0x${rconVal.toString(16).padStart(2,'0')}\n`;
+                temp[0] ^= rconVal;
+                steps += ` after XOR rcon: ${bytesToHex(temp)}\n`;
+            }
+            let newW = [];
+            for(let j=0;j<4;j++) newW[j] = w[i-4][j] ^ temp[j];
+            w.push(newW);
+            steps += ` w[${i}] = w[${i-4}] XOR temp → ${bytesToHex(newW)}\n`;
+        }
+        steps += "\n>>> ROUND KEYS (11 rounds) <<<\n";
+        for(let r=0;r<=10;r++) {
+            let rk = w.slice(r*4, r*4+4).flat();
+            steps += `round key ${r}: ${bytesToHex(rk)}\n`;
+        }
+
+        steps += "\n>>> ENCRYPTION PROCESS (10 rounds) with matrix state and MixColumns detail <<<\n";
+        let ptBytes = new TextEncoder().encode(input.padEnd(16,'\0')).slice(0,16);
+        steps += `Plaintext bytes: ${bytesToHex(Array.from(ptBytes))}\n`;
+        let state = Array.from(ptBytes);
+        steps += matrixString(state, "Initial state (column-major)");
+
+        let roundKey = w.slice(0,4).flat();
+        steps += `\nAddRoundKey 0 with key: ${bytesToHex(roundKey)}\n`;
+        for(let i=0;i<16;i++) state[i] ^= roundKey[i];
+        steps += matrixString(state, "After initial AddRoundKey");
+
+        for(let r=1; r<=10; r++) {
+            steps += `\n========== ROUND ${r} ==========\n`;
+
+            let oldState = state.slice();
+            for(let i=0;i<16;i++) state[i] = SBOX[state[i]];
+            steps += `SubBytes (S-box):\n from: ${bytesToHex(oldState)}\n to : ${bytesToHex(state)}\n`;
+            steps += matrixString(state, "After SubBytes");
+
+            let afterSR = new Array(16);
+            for(let row=0;row<4;row++) {
+                for(let col=0;col<4;col++) {
+                    afterSR[row + 4*col] = state[row + 4*((col + row) % 4)];
+                }
+            }
+            steps += `ShiftRows:\n from: ${bytesToHex(state)}\n to : ${bytesToHex(afterSR)}\n`;
+            steps += matrixString(afterSR, "After ShiftRows");
+
+            if(r < 10) {
+                let beforeMC = afterSR.slice();
+                let afterMC = new Array(16);
+                steps += `\n--- MixColumns detailed (each column) ---\n`;
+                for(let col=0; col<4; col++) {
+                    let colBytes = [beforeMC[0+4*col], beforeMC[1+4*col], beforeMC[2+4*col], beforeMC[3+4*col]];
+                    let mixed = mixColumn(colBytes);
+                    steps += ` column ${col} input : [${colBytes.map(b=>'0x'+b.toString(16).padStart(2,'0')).join(' ')}]\n`;
+                    steps += ` output: [${mixed.map(b=>'0x'+b.toString(16).padStart(2,'0')).join(' ')}]\n`;
+                    for(let row=0; row<4; row++) afterMC[row+4*col] = mixed[row];
+                }
+                steps += `MixColumns result: ${bytesToHex(afterMC)}\n`;
+                state = afterMC;
+                steps += matrixString(state, "After MixColumns");
+            } else {
+                state = afterSR;
+            }
+
+            roundKey = w.slice(r*4, r*4+4).flat();
+            steps += `\nAddRoundKey ${r} with key: ${bytesToHex(roundKey)}\n`;
+            for(let i=0;i<16;i++) state[i] ^= roundKey[i];
+            steps += matrixString(state, `After AddRoundKey ${r}`);
+        }
+
+        let cipherHex = bytesToHex(state);
+        steps += `\n FINAL CIPHERTEXT: ${cipherHex} \n`;
+        document.getElementById('aes-steps').innerText = steps;
+        document.getElementById('aes-out').innerText = 'Ciphertext: ' + cipherHex;
+    }
+    function resetAesTrace() {
+        document.getElementById('aes-key').value = '2b7e151628aed2a6abf7158809cf4f3c';
+        document.getElementById('aes-input').value = 'Hello, AES-128!';
+        document.getElementById('aes-mode').value = 'encrypt';
+        document.getElementById('aes-steps').innerText = '// AES step dump (matrix & MixColumns detail) will appear here';
+        document.getElementById('aes-out').innerText = 'Result: ';
+    }
+
+    // ############################################################
+    // # EX3: RSA 
+    // ############################################################
+
+    //  prime check
+    function isPrime(num) {
+        if (num <= 1) return false;
+        for (let i = 2; i <= Math.sqrt(num); i++)
+            if (num % i == 0) return false;
+        return true;
+    }
+
+    // Euclidean division steps (returns HTML string)
+    function gcdStepsHTML(a, b) {
+        let html = "<h3 style='color:#a78bfa;'>Euclidean division steps</h3>";
+        html += "<table><tr><th>a</th><th>b</th><th>q</th><th>r</th></tr>";
+        let r0 = a, r1 = b;
+        while (r1 != 0) {
+            let q = Math.floor(r0 / r1);
+            let r = r0 % r1;
+            html += `<tr><td>${r0}</td><td>${r1}</td><td>${q}</td><td>${r}</td></tr>`;
+            r0 = r1;
+            r1 = r;
+        }
+        html += "</table>";
+        return html;
+    }
+
+    // Extended Euclidean algorithm (returns HTML string with table and d)
+    function extendedEuclidHTML(phi, e) {
+        let r1 = phi, r2 = e;
+        let s1 = 1, s2 = 0;
+        let t1 = 0, t2 = 1;
+
+        let html = "<h3 style='color:#a78bfa;'>Extended Euclidean table</h3>";
+        html += "<table><tr><th>step</th><th>r</th><th>q</th><th>s</th><th>t</th></tr>";
+        let step = 0;
+        html += `<tr><td>${step}</td><td>${r1}</td><td>-</td><td>${s1}</td><td>${t1}</td></tr>`;
+        step++;
+        html += `<tr><td>${step}</td><td>${r2}</td><td>-</td><td>${s2}</td><td>${t2}</td></tr>`;
+
+        while (r2 != 0) {
+            let q = Math.floor(r1 / r2);
+            let r = r1 - q * r2;
+            let s = s1 - q * s2;
+            let t = t1 - q * t2;
+            step++;
+            html += `<tr><td>${step}</td><td>${r}</td><td>${q}</td><td>${s}</td><td>${t}</td></tr>`;
+            r1 = r2; r2 = r;
+            s1 = s2; s2 = s;
+            t1 = t2; t2 = t;
+        }
+        html += "</table>";
+        // d is t1 (may be negative, adjust later)
+        return { d: t1, html: html };
+    }
+
+    // Fast exponentiation with detailed steps (returns HTML string and final value)
+    function fastExpDetailed(base, exp, mod) {
+        let binary = exp.toString(2);
+        let html = `<h4 style='color:#f59e0b;'>${base}^${exp} mod ${mod}</h4>`;
+        html += `Binary of ${exp} = ${binary}<br><br>`;
+        html += "<b>Step 1: Compute powers</b><br>";
+
+        let current = BigInt(base) % BigInt(mod);
+        let m = BigInt(mod);
+        let powers = [];
+
+        for (let i = 0; i < binary.length; i++) {
+            let powerVal = (current % m).toString();
+            powers.push(powerVal);
+            html += `${base}^2^${i} mod ${mod} = ${powerVal}<br>`;
+            current = (current * current) % m;
+        }
+
+        html += "<br><b>Step 2: Multiply selected powers</b><br>(";
+        let final = 1n;
+        for (let i = 0; i < binary.length; i++) {
+            if (binary[binary.length - 1 - i] === "1") {
+                html += powers[i] + " × ";
+                final = (final * BigInt(powers[i])) % m;
+            }
+        }
+        html = html.slice(0, -3); // remove trailing ' × '
+        html += ") mod " + mod + "<br>";
+        html += `<b>Final result = ${final.toString()}</b><br>`;
+        return { value: Number(final), html: html };
+    }
+
+    function runRSA() {
+        let p = parseInt(document.getElementById('rsa-p').value);
+        let q = parseInt(document.getElementById('rsa-q').value);
+        let e = parseInt(document.getElementById('rsa-e').value);
+        let message = document.getElementById('rsa-m').value.trim();
+
+        if (!isPrime(p) || !isPrime(q)) {
+            alert("p and q must be prime numbers!");
+            return;
+        }
+
+        let n = p * q;
+        let phi = (p - 1) * (q - 1);
+
+        let steps = "<span style='color:#a78bfa; font-size:1.4rem;'>RSA </span><br><br>";
+        steps += `<b>1. Compute n</b> : n = ${p} × ${q} = ${n}<br>`;
+        steps += `<b>2. Compute φ(n)</b> : φ = (${p}-1)(${q}-1) = ${phi}<br><br>`;
+        steps += `<b>3. Check gcd(e, φ)</b> with e = ${e}<br>`;
+        steps += gcdStepsHTML(phi, e);
+        // check gcd result (we need to extract gcd from the last remainder of gcdSteps)
+        // simpler: compute gcd directly
+        let gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+        if (gcd(phi, e) !== 1) {
+            steps += "<br><span style='color:#f87171;'>e is not coprime with φ(n). Choose another e.</span>";
+            document.getElementById('rsa-steps').innerHTML = steps;
+            document.getElementById('rsa-out').innerText = 'Error: e not valid';
+            return;
+        }
+        steps += `<br> gcd = 1 → e is valid.<br>`;
+
+        steps += `<b>4. Find d (private exponent) using extended Euclid</b><br>`;
+        let ee = extendedEuclidHTML(phi, e);
+        let d = ee.d;
+        if (d < 0) d += phi; // make positive
+        steps += ee.html;
+        steps += `<br>d = ${d} (after making positive)<br>`;
+        steps += `<b>Public key</b> : (${e}, ${n})<br>`;
+        steps += `<b>Private key</b>: (${d}, ${n})<br><br>`;
+
+        // Determine if message is numeric or text
+        let finalResultText = "";
+        if (!isNaN(message) && message !== "") {
+            // numeric message
+            let M = parseInt(message);
+            steps += `<h3 style='color:#a78bfa;'>Encryption (numeric)</h3>`;
+            let enc = fastExpDetailed(M, e, n);
+            steps += enc.html;
+            steps += `<h3 style='color:#a78bfa;'>Decryption</h3>`;
+            let dec = fastExpDetailed(enc.value, d, n);
+            steps += dec.html;
+            finalResultText = `Ciphertext: ${enc.value} → Decrypted: ${dec.value}`;
+        } else {
+            // text mode
+            steps += `<h3 style='color:#a78bfa;'>TEXT MODE – processing each character</h3>`;
+            let cipherChars = [];
+            let plainChars = [];
+            for (let i = 0; i < message.length; i++) {
+                let ascii = message.charCodeAt(i);
+                steps += `<hr><b>Character '${message[i]}' (ASCII ${ascii})</b><br>`;
+                let enc = fastExpDetailed(ascii, e, n);
+                steps += enc.html;
+                let dec = fastExpDetailed(enc.value, d, n);
+                steps += dec.html;
+                cipherChars.push(enc.value);
+                plainChars.push(String.fromCharCode(dec.value));
+            }
+            let cipherText = cipherChars.join(' ');
+            let recovered = plainChars.join('');
+            steps += `<hr><b>Final cipher values</b> : ${cipherText}<br>`;
+            steps += `<b>Recovered text</b> : ${recovered}<br>`;
+            finalResultText = `Ciphertext (numbers): ${cipherText} → Decrypted text: ${recovered}`;
+        }
+
+        document.getElementById('rsa-steps').innerHTML = steps;
+        document.getElementById('rsa-out').innerText = 'Result: ' + finalResultText;
+    }
+
+    function modPow(base, exp, mod) {
+        let result = 1n;
+        let b = BigInt(base) % BigInt(mod);
+        let e = BigInt(exp);
+        let m = BigInt(mod);
+
+        while (e > 0n) {
+            if (e & 1n) result = (result * b) % m;
+            b = (b * b) % m;
+            e >>= 1n;
+        }
+
+        return result;
+    }
+
+    function runDiffieHellman() {
+        let p = parseInt(document.getElementById('dh-p').value);
+        let g = parseInt(document.getElementById('dh-g').value);
+        let a = parseInt(document.getElementById('dh-a').value);
+        let b = parseInt(document.getElementById('dh-b').value);
+
+        if ([p, g, a, b].some(Number.isNaN)) {
+            alert('Enter valid numeric values for P, G, a and b.');
+            return;
+        }
+        if (p <= 1 || g <= 0 || a <= 0 || b <= 0) {
+            alert('P must be greater than 1, and G, a, b must be positive.');
+            return;
+        }
+
+        let alicePublic = modPow(g, a, p);
+        let bobPublic = modPow(g, b, p);
+        let aliceSecret = modPow(bobPublic, a, p);
+        let bobSecret = modPow(alicePublic, b, p);
+
+        let steps = " DIFFIE-HELLMAN KEY EXCHANGE \n\n" ;
+        steps += `Public values:\nP = ${p}\nG = ${g}\n\n`;
+        steps += `Private keys:\nAlice chooses a = ${a}\nBob chooses b = ${b}\n\n`;
+        steps += "Step 1: Compute public keys\n";
+        steps += `Alice computes A = G^a mod P = ${g}^${a} mod ${p} = ${alicePublic}\n`;
+        steps += `Bob computes B = G^b mod P = ${g}^${b} mod ${p} = ${bobPublic}\n\n`;
+        steps += "Step 2: Exchange public keys\n";
+        steps += `Alice sends A = ${alicePublic}\n`;
+        steps += `Bob sends B = ${bobPublic}\n\n`;
+        steps += "Step 3: Compute shared secret\n";
+        steps += `Alice computes K = B^a mod P = ${bobPublic}^${a} mod ${p} = ${aliceSecret}\n`;
+        steps += `Bob computes K = A^b mod P = ${alicePublic}^${b} mod ${p} = ${bobSecret}\n\n`;
+        steps += aliceSecret === bobSecret
+            ? `Shared secret established successfully: K = ${aliceSecret}`
+            : `Mismatch detected: Alice=${aliceSecret}, Bob=${bobSecret}`;
+
+        document.getElementById('dh-steps').innerText = steps;
+        document.getElementById('dh-out').innerText =
+            aliceSecret === bobSecret
+                ? `Result: Shared secret key = ${aliceSecret} (A = ${alicePublic}, B = ${bobPublic})`
+                : 'Result: Error - computed secrets do not match';
+    }
+
+    function resetDiffieHellman() {
+        document.getElementById('dh-p').value = '23';
+        document.getElementById('dh-g').value = '5';
+        document.getElementById('dh-a').value = '6';
+        document.getElementById('dh-b').value = '15';
+        document.getElementById('dh-steps').innerText = '// Diffie-Hellman steps will appear here';
+        document.getElementById('dh-out').innerText = 'Result: ';
+    }
+
+    window.onload = function() {
+        // default active DES
+        document.querySelectorAll('.cipher-box').forEach(b=>b.classList.remove('active'));
+        document.getElementById('des-box').classList.add('active');
+        document.getElementById('current-ex').innerText = 'DES (full trace)';
+    }
+</script>
+</body>
+</html>

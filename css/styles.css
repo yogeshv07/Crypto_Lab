@@ -1,0 +1,227 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: #f8fafc;
+    font-family: 'Segoe UI', Roboto, monospace;
+    color: #1e293b;
+    line-height: 1.5;
+}
+
+.app {
+    display: flex;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.sidebar {
+    width: 260px;
+    background: #ffffff;
+    border-right: 1px solid #dbe4f0;
+    padding: 1.5rem 0.75rem;
+    flex-shrink: 0;
+    height: 100vh;
+    overflow-y: auto;
+    position: sticky;
+    top: 0;
+}
+
+.sidebar h2 {
+    color: #1e3a5f;
+    border-bottom: 1px solid #dbe4f0;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.2rem;
+    font-weight: 500;
+}
+
+.ex-header {
+    background: #eef4fb;
+    border: 1px solid #d3e0ef;
+    padding: 0.7rem 1rem;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+    margin: 0.5rem 0;
+    font-weight: 600;
+    color: #1f3a56;
+}
+
+.submenu {
+    margin-left: 1rem;
+    border-left: 2px solid #c8d8ea;
+    padding-left: 0.5rem;
+    display: none;
+}
+
+.submenu.show { display: block; }
+
+.cipher-btn {
+    width: 100%;
+    background: transparent;
+    border: none;
+    text-align: left;
+    padding: 0.5rem 0.8rem;
+    color: #4b5d73;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.cipher-btn:hover { background: #e8f1fb; color: #0f172a; }
+
+.cipher-btn.active {
+    background: #dbeafe;
+    border-left: 4px solid #2563eb;
+    color: #0f172a;
+}
+
+.main {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1200px;
+}
+
+.header-panel {
+    background: #ffffff;
+    border: 1px solid #dbe4f0;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+}
+
+.header-panel h1 { 
+    color: #1d4ed8; 
+    font-size: 1.8rem; 
+    font-weight: 600; 
+}
+
+.header-row { 
+    display: flex; 
+    gap: 2rem; 
+    color: #64748b; 
+    margin-top: 0.5rem; 
+}
+
+.cipher-box {
+    background: #ffffff;
+    border: 1px solid #dbe4f0;
+    padding: 2rem;
+    border-radius: 12px;
+    margin-top: 1.5rem;
+    display: none;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+}
+
+.cipher-box.active { display: block; }
+
+h3 { 
+    color: #1d4ed8; 
+    font-size: 1.8rem; 
+    margin-bottom: 1.2rem; 
+    border-bottom: 1px solid #dbe4f0; 
+    padding-bottom: 0.5rem; 
+}
+
+label { 
+    display: block; 
+    color: #475569; 
+    text-transform: uppercase; 
+    font-size: 0.8rem; 
+    margin: 1rem 0 0.2rem; 
+}
+
+input, textarea, select {
+    width: 100%;
+    background: #f8fbff;
+    border: 1px solid #cbd5e1;
+    color: #0f172a;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+}
+
+.btn-group { 
+    display: flex; 
+    gap: 0.8rem; 
+    flex-wrap: wrap; 
+    margin: 1.5rem 0; 
+}
+
+button {
+    background: #e2e8f0;
+    border: 1px solid #cbd5e1;
+    color: #0f172a;
+    padding: 0.7rem 1.8rem;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+button.primary { 
+    background: #2563eb; 
+    border-color: #1d4ed8; 
+    color: white; 
+}
+
+.steps-panel {
+    background: #f8fbff;
+    border: 1px solid #d7e3f1;
+    border-radius: 8px;
+    padding: 1.5rem;
+    font-family: 'Courier New', monospace;
+    white-space: pre-wrap;
+    line-height: 1.6;
+    max-height: 700px;
+    overflow: auto;
+    margin: 1.5rem 0;
+}
+
+.result-box {
+    background: #f0fdf4;
+    border-left: 4px solid #16a34a;
+    padding: 1rem;
+    font-weight: bold;
+}
+
+.matrix-display {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    background: #eef4fb;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 8px 0;
+    font-family: 'Courier New', monospace;
+}
+
+.matrix-cell {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    text-align: center;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+.key-row { 
+    background: #fff7ed; 
+    padding: 0.8rem; 
+    margin: 0.5rem 0; 
+    border-left: 6px solid #f59e0b; 
+}
+
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin: 10px 0; 
+    background: #ffffff; 
+}
+
+th, td { 
+    border: 1px solid #cbd5e1; 
+    padding: 6px; 
+    text-align: center; 
+    color: #1e293b; 
+}
+
+th { background: #e8f1fb; }

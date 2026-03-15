@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DES · AES · Classical · RSA · complete step‑by‑step</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="app">
+    <div class="sidebar">
+        <h2> Cipher Exercises</h2>
+        <div class="ex-group">
+            <div class="ex-header" onclick="toggleSub(this)">Ex1: Classical  <span class="arrow">▼</span></div>
+            <div class="submenu show">
+                <button class="cipher-btn" onclick="showCipher('vigenere')">Vigenère</button>
+                <button class="cipher-btn" onclick="showCipher('affine')">Affine</button>
+                <button class="cipher-btn" onclick="showCipher('playfair')">Playfair</button>
+                <button class="cipher-btn" onclick="showCipher('fermat')">Fermat</button>
+                <button class="cipher-btn" onclick="showCipher('euclid')">Extended Euclid</button>
+            </div>
+        </div>
+        <div class="ex-group">
+            <div class="ex-header" onclick="toggleSub(this)">Ex2: Block Ciphers  <span class="arrow">▼</span></div>
+            <div class="submenu show">
+                <button class="cipher-btn" onclick="showCipher('des')">DES (16 rounds)</button>
+                <button class="cipher-btn" onclick="showCipher('aes')">AES-128 (10 rounds)</button>
+            </div>
+        </div>
+        <div class="ex-group">
+            <div class="ex-header" onclick="toggleSub(this)">Ex3: RSA <span class="arrow">▼</span></div>
+            <div class="submenu show">
+                <button class="cipher-btn" onclick="showCipher('rsa')">RSA </button>
+            </div>
+        </div>
+        <div class="ex-group">
+            <div class="ex-header" onclick="toggleSub(this)">Ex4: Diffie-Hellman <span class="arrow">▼</span></div>
+            <div class="submenu show">
+                <button class="cipher-btn" onclick="showCipher('diffie')">Key Exchange</button>
+            </div>
+        </div>
+        <div class="ex-group">
+            <div class="ex-header" onclick="toggleSub(this)">Ex5: Hash Functions <span class="arrow">▼</span></div>
+            <div class="submenu show">
+                <button class="cipher-btn" onclick="showCipher('md5')">MD5</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="header-panel">
+            <h1>23CS681 CRYPTOGRAPHY & NETWORK SECURITY</h1>
+        </div>
+
+        <!-- ========== EX1: CLASSICAL  ========== -->
+        <!-- Vigenère -->
+        <div id="vigenere-box" class="cipher-box">
+            <h3>Vigenère Cipher</h3>
+            <label>Plaintext</label><input id="vig-text" value="CIPHER">
+            <label>Key (letters only)</label><input id="vig-key" value="KEY">
+            <button class="primary" onclick="vigenereEncrypt()">Encrypt</button>
+            <button onclick="vigenereDecrypt()">Decrypt</button>
+            <div id="vig-steps" class="steps-panel">// Vigenère steps</div>
+            <div id="vig-out" class="result-box">Result: </div>
+        </div>
+
+        <!-- Affine -->
+        <div id="affine-box" class="cipher-box">
+            <h3>Affine Cipher (encrypt only)</h3>
+            <label>a (must be coprime to 26)</label><input id="aff-a" value="9">
+            <label>b</label><input id="aff-b" value="6">
+            <label>Plaintext (A-Z)</label><textarea id="aff-text" rows="2">HELLO</textarea>
+            <button class="primary" onclick="affineEncrypt()">Encrypt</button>
+            <div id="aff-steps" class="steps-panel">// Affine steps</div>
+            <div id="aff-out" class="result-box">Result: </div>
+        </div>
+
+        <!-- Playfair -->
+        <div id="playfair-box" class="cipher-box">
+            <h3>Playfair Cipher (5x5 matrix)</h3>
+            <label>Keyword</label><input id="pf-key" value="MONARCHY">
+            <label>Plaintext (A-Z, no J)</label><textarea id="pf-text" rows="2">INSTRUMENTS</textarea>
+            <button class="primary" onclick="playfairEncrypt()">Encrypt</button>
+            <div id="pf-matrix" class="matrix-display"></div>
+            <div id="pf-steps" class="steps-panel">// Playfair steps</div>
+            <div id="pf-out" class="result-box">Result: </div>
+        </div>
+
+        <!-- Fermat -->
+        <div id="fermat-box" class="cipher-box">
+            <h3>Fermat's Little Theorem</h3>
+            <label>Prime p</label><input id="fer-p" value="13">
+            <label>Integer a (not multiple of p)</label><input id="fer-a" value="5">
+            <button class="primary" onclick="fermatCalc()">Compute a^(p-1) mod p</button>
+            <div id="fer-steps" class="steps-panel">// Fermat steps</div>
+            <div id="fer-out" class="result-box">Result: </div>
+        </div>
+
+        <!-- Extended Euclid -->
+        <div id="euclid-box" class="cipher-box">
+            <h3>Extended Euclidean Algorithm</h3>
+            <label>a</label><input id="euc-a" value="5432">
+            <label>b</label><input id="euc-b" value="46">
+            <button class="primary" onclick="computeEuclid()">Compute GCD & coefficients</button>
+            <div id="euc-steps" class="steps-panel">// Extended Euclid steps</div>
+            <div id="euc-out" class="result-box">Result: </div>
+        </div>
+
+        <!-- ========== EX2: DES  ========== -->
+        <div id="des-box" class="cipher-box active">
+            <h3>DES – 16 rounds </h3>
+            <div style="display:flex; gap:1rem;">
+                <div style="flex:2"><label>Key (16 hex)</label><input id="des-key" value="133457799bbcdff1"></div>
+                <div style="flex:1"><label>Mode</label><select id="des-mode"><option value="encrypt">Encrypt</option><option value="decrypt">Decrypt</option></select></div>
+            </div>
+            <label>Plaintext (8 chars) / cipher hex</label><textarea id="des-input" rows="2">ABCDEFGH</textarea>
+            <div class="btn-group">
+                <button class="primary" onclick="runDesFullTrace()">▶ Run DES full trace</button>
+                <button onclick="resetDesTrace()">Reset</button>
+            </div>
+            <div id="des-steps" class="steps-panel">// DES step dump will appear here</div>
+            <div id="des-out" class="result-box">Result: </div>
+        </div>
+
+        <!-- ========== EX2: AES-128  ========== -->
+        <div id="aes-box" class="cipher-box">
+            <h3>AES-128 – 10 rounds </h3>
+            <div style="display:flex; gap:1rem;">
+                <div style="flex:2"><label>Key (32 hex)</label><input id="aes-key" value="2b7e151628aed2a6abf7158809cf4f3c"></div>
+                <div style="flex:1"><label>Mode</label><select id="aes-mode"><option value="encrypt">Encrypt</option><option value="decrypt">Decrypt</option></select></div>
+            </div>
+            <label>Plaintext (16 bytes) / cipher hex</label><textarea id="aes-input" rows="2">Hello, AES-128!</textarea>
+            <div class="btn-group">
+                <button class="primary" onclick="runAesFullTrace()">▶ Run AES full trace</button>
+                <button onclick="resetAesTrace()">Reset</button>
+            </div>
+            <div id="aes-steps" class="steps-panel">// AES step dump (matrix & MixColumns detail) will appear here</div>
+            <div id="aes-out" class="result-box">Result: </div>
+        </div>
+
+        <!-- ========== EX3: RSA  ========== -->
+        <div id="rsa-box" class="cipher-box">
+            <h3>RSA </h3>
+            <label>Prime p</label><input id="rsa-p" value="61">
+            <label>Prime q</label><input id="rsa-q" value="53">
+            <label>Select e (coprime to φ)</label><input id="rsa-e" value="17">
+            <label>Message (number or text)</label><textarea id="rsa-m" rows="2">HELLO</textarea>
+            <button class="primary" onclick="runRSA()">▶ Run RSA full trace</button>
+            <div id="rsa-steps" class="steps-panel">// RSA steps will appear here</div>
+            <div id="rsa-out" class="result-box">Result: </div>
+        </div>
+
+        <!-- ========== EX4: DIFFIE-HELLMAN ========== -->
+        <div id="diffie-box" class="cipher-box">
+            <h3>Diffie-Hellman Key Exchange</h3>
+            <label>Public Prime (P)</label><input id="dh-p" value="23">
+            <label>Primitive Root (G)</label><input id="dh-g" value="5">
+            <label>Alice's Private Key (a)</label><input id="dh-a" value="6">
+            <label>Bob's Private Key (b)</label><input id="dh-b" value="15">
+            <div class="btn-group">
+                <button class="primary" onclick="runDiffieHellman()">Exchange Keys</button>
+                <button onclick="resetDiffieHellman()">Reset</button>
+            </div>
+            <div id="dh-steps" class="steps-panel">// Diffie-Hellman steps will appear here</div>
+            <div id="dh-out" class="result-box">Result: </div>
+        </div>
+
+        <!-- ========== EX5: MD5 ========== -->
+        <div id="md5-box" class="cipher-box">
+            <h3>MD5 Hash Function</h3>
+            <label>Message to Hash</label><input id="md5-message" value="hello world">
+            <button class="primary" onclick="computeMD5()">Compute MD5 Hash</button>
+            <div id="md5-steps" class="steps-panel">// MD5 steps</div>
+            <div id="md5-out" class="result-box">Result: </div>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

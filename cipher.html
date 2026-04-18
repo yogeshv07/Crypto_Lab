@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DES · AES · Classical · RSA · complete step‑by‑step</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background: #f8fafc;
-            font-family: 'Segoe UI', Roboto, monospace;
-            color: #1e293b;
+            background: #f3e8ff;
+            font-family: 'Roboto', sans-serif;
+            color: #202124;
             line-height: 1.5;
         }
         .app {
@@ -20,7 +19,7 @@
         .sidebar {
             width: 260px;
             background: #ffffff;
-            border-right: 1px solid #dbe4f0;
+            border-right: 1px solid #d8c9f0;
             padding: 1.5rem 0.75rem;
             flex-shrink: 0;
             height: 100vh;
@@ -29,15 +28,15 @@
             top: 0;
         }
         .sidebar h2 {
-            color: #1e3a5f;
-            border-bottom: 1px solid #dbe4f0;
+            color: #5b3e7c;
+            border-bottom: 1px solid #d8c9f0;
             padding-bottom: 0.75rem;
             margin-bottom: 1.2rem;
             font-weight: 500;
         }
         .ex-header {
-            background: #eef4fb;
-            border: 1px solid #d3e0ef;
+            background: #f7efff;
+            border: 1px solid #d8c9f0;
             padding: 0.7rem 1rem;
             border-radius: 6px;
             display: flex;
@@ -45,11 +44,11 @@
             cursor: pointer;
             margin: 0.5rem 0;
             font-weight: 600;
-            color: #1f3a56;
+            color: #5b3e7c;
         }
         .submenu {
             margin-left: 1rem;
-            border-left: 2px solid #c8d8ea;
+            border-left: 2px solid #8b6bc4;
             padding-left: 0.5rem;
             display: none;
         }
@@ -60,16 +59,16 @@
             border: none;
             text-align: left;
             padding: 0.5rem 0.8rem;
-            color: #4b5d73;
+            color: #202124;
             border-radius: 4px;
             cursor: pointer;
             font-size: 0.95rem;
         }
-        .cipher-btn:hover { background: #e8f1fb; color: #0f172a; }
+        .cipher-btn:hover { background: #ede2ff; color: #5b3e7c; }
         .cipher-btn.active {
-            background: #dbeafe;
-            border-left: 4px solid #2563eb;
-            color: #0f172a;
+            background: #ede2ff;
+            border-left: 4px solid #8b6bc4;
+            color: #5b3e7c;
         }
         .main {
             flex: 1;
@@ -78,49 +77,101 @@
         }
         .header-panel {
             background: #ffffff;
-            border: 1px solid #dbe4f0;
+            border: 1px solid #d8c9f0;
             padding: 1.5rem;
             border-radius: 12px;
             margin-bottom: 2rem;
-            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+            box-shadow: 0 1px 3px rgba(60, 64, 67, 0.12);
         }
-        .header-panel h1 { color: #1d4ed8; font-size: 1.8rem; font-weight: 600; }
-        .header-row { display: flex; gap: 2rem; color: #64748b; margin-top: 0.5rem; }
+        .header-panel h1 { color: #5b3e7c; font-size: 1.8rem; font-weight: 600; }
+        .header-row { display: flex; gap: 2rem; color: #5f6368; margin-top: 0.5rem; }
         .cipher-box {
             background: #ffffff;
-            border: 1px solid #dbe4f0;
+            border: 1px solid #d8c9f0;
             padding: 2rem;
             border-radius: 12px;
             margin-top: 1.5rem;
             display: none;
-            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+            box-shadow: 0 1px 3px rgba(60, 64, 67, 0.12);
         }
         .cipher-box.active { display: block; }
-        h3 { color: #1d4ed8; font-size: 1.8rem; margin-bottom: 1.2rem; border-bottom: 1px solid #dbe4f0; padding-bottom: 0.5rem; }
-        label { display: block; color: #475569; text-transform: uppercase; font-size: 0.8rem; margin: 1rem 0 0.2rem; }
+        h3 { color: #5b3e7c; font-size: 1.8rem; margin-bottom: 1.2rem; border-bottom: 1px solid #d8c9f0; padding-bottom: 0.5rem; }
+        label { display: block; color: #202124; text-transform: uppercase; font-size: 0.8rem; margin: 1rem 0 0.2rem; }
+        input, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d8c9f0;
+            border-radius: 4px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            background: #ffffff;
+        }
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            background: #f7efff;
+            color: #5b3e7c;
+        }
+        .primary {
+            background: #8b6bc4;
+            color: #ffffff;
+        }
+        .primary:hover { background: #7b5bbf; }
+        .steps-panel, .result-box {
+            background: #ffffff;
+            border: 1px solid #d8c9f0;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .matrix-cell {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 1px solid #d8c9f0;
+            text-align: center;
+            line-height: 30px;
+            margin: 2px;
+            background: #ffffff;
+            border-radius: 4px;
+        }
         input, textarea, select {
             width: 100%;
-            background: #f8fbff;
-            border: 1px solid #cbd5e1;
-            color: #0f172a;
+            background: #ffffff;
+            border: 1px solid #d8c9f0;
+            color: #202124;
             padding: 0.7rem 1rem;
             border-radius: 8px;
             font-family: 'Courier New', monospace;
         }
         .btn-group { display: flex; gap: 0.8rem; flex-wrap: wrap; margin: 1.5rem 0; }
         button {
-            background: #e2e8f0;
-            border: 1px solid #cbd5e1;
-            color: #0f172a;
+            background: #f7efff;
+            border: 1px solid #d8c9f0;
+            color: #5b3e7c;
             padding: 0.7rem 1.8rem;
             border-radius: 30px;
             font-weight: 600;
             cursor: pointer;
         }
-        button.primary { background: #2563eb; border-color: #1d4ed8; color: white; }
+        button.primary { background: #8b6bc4; border-color: #8b6bc4; color: white; }
         .steps-panel {
-            background: #f8fbff;
-            border: 1px solid #d7e3f1;
+            background: #ffffff;
+            border: 1px solid #d8c9f0;
             border-radius: 8px;
             padding: 1.5rem;
             font-family: 'Courier New', monospace;
@@ -131,8 +182,8 @@
             margin: 1.5rem 0;
         }
         .result-box {
-            background: #f0fdf4;
-            border-left: 4px solid #16a34a;
+            background: #f3e8ff;
+            border-left: 4px solid #8b6bc4;
             padding: 1rem;
             font-weight: bold;
         }
@@ -140,7 +191,7 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 6px;
-            background: #eef4fb;
+            background: #f7efff;
             padding: 10px;
             border-radius: 8px;
             margin: 8px 0;
@@ -148,15 +199,15 @@
         }
         .matrix-cell {
             background: #ffffff;
-            border: 1px solid #cbd5e1;
+            border: 1px solid #d8c9f0;
             text-align: center;
             padding: 4px;
             border-radius: 4px;
         }
-        .key-row { background: #fff7ed; padding: 0.8rem; margin: 0.5rem 0; border-left: 6px solid #f59e0b; }
+        .key-row { background: #f3e8ff; padding: 0.8rem; margin: 0.5rem 0; border-left: 6px solid #8b6bc4; }
         table { width: 100%; border-collapse: collapse; margin: 10px 0; background: #ffffff; }
         th, td { border: 1px solid #cbd5e1; padding: 6px; text-align: center; color: #1e293b; }
-        th { background: #e8f1fb; }
+        th { background: #ece0ff; }
     </style>
 </head>
 <body>
@@ -164,7 +215,7 @@
     <div class="sidebar">
         <h2> Cipher Exercises</h2>
         <div class="ex-group">
-            <div class="ex-header" onclick="toggleSub(this)">Ex1: Classical  <span class="arrow">▼</span></div>
+            <div class="ex-header" onclick="toggleSub(this)">Ex1<span class="arrow">▼</span></div>
             <div class="submenu show">
                 <button class="cipher-btn" onclick="showCipher('vigenere')">Vigenère</button>
                 <button class="cipher-btn" onclick="showCipher('affine')">Affine</button>
@@ -174,31 +225,36 @@
             </div>
         </div>
         <div class="ex-group">
-            <div class="ex-header" onclick="toggleSub(this)">Ex2: Block Ciphers  <span class="arrow">▼</span></div>
+            <div class="ex-header" onclick="toggleSub(this)">Ex2<span class="arrow">▼</span></div>
             <div class="submenu show">
                 <button class="cipher-btn" onclick="showCipher('des')">DES (16 rounds)</button>
                 <button class="cipher-btn" onclick="showCipher('aes')">AES-128 (10 rounds)</button>
             </div>
         </div>
         <div class="ex-group">
-            <div class="ex-header" onclick="toggleSub(this)">Ex3: RSA <span class="arrow">▼</span></div>
+            <div class="ex-header" onclick="toggleSub(this)">Ex3<span class="arrow">▼</span></div>
             <div class="submenu show">
                 <!-- Replaced the two placeholder buttons with one full RSA button -->
                 <button class="cipher-btn" onclick="showCipher('rsa')">RSA </button>
             </div>
-        </div>
-        <div class="ex-group">
-            <div class="ex-header" onclick="toggleSub(this)">Ex4: Diffie-Hellman <span class="arrow">▼</span></div>
             <div class="submenu show">
-                <button class="cipher-btn" onclick="showCipher('diffie')">Key Exchange</button>
+                <button class="cipher-btn" onclick="showCipher('diffie')">Diffie-Hellman</button>
             </div>
         </div>
-        <div class="ex-group">
-            <div class="ex-header" onclick="toggleSub(this)">Ex5: Hash Functions <span class="arrow">▼</span></div>
-            <div class="submenu show">
+                <div class="ex-group">
+            <div class="ex-header" onclick="toggleSub(this)">Ex4a <span class="arrow">▶</span></div>
+            <div class="submenu">
                 <button class="cipher-btn" onclick="showCipher('md5')">MD5</button>
             </div>
         </div>
+        <div class="ex-group">
+            <div class="ex-header" onclick="toggleSub(this)">Ex4b <span class="arrow">▶</span></div>
+            <div class="submenu">
+                <button class="cipher-btn" onclick="showCipher('cmac')">CMAC</button>
+            </div>
+            
+        </div>
+
 
     </div>
 
@@ -320,174 +376,34 @@
             <div id="dh-out" class="result-box">Result: </div>
         </div>
 
+        <!-- ========== EX4: CMAC ========== -->
+        <div id="cmac-box" class="cipher-box">
+            <h3>Message Authentication Code - CMAC</h3>
+            <label>Message</label><input id="cmac-message" value="hello">
+            <label>AES-128 Key (32 hex)</label><input id="cmac-key" value="2b7e151628aed2a6abf7158809cf4f3c">
+            <div class="btn-group">
+                <button class="primary" onclick="computeCMACUI()">Compute CMAC</button>
+                <button onclick="resetCMAC()">Reset</button>
+            </div>
+            <div id="cmac-steps" class="steps-panel">// CMAC steps will appear here</div>
+            <div id="cmac-out" class="result-box">Result: </div>
+        </div>
+
         <!-- ========== EX5: MD5 ========== -->
         <div id="md5-box" class="cipher-box">
             <h3>MD5 Hash Function</h3>
-            <label>Message to Hash</label><input id="md5-message" value="hello world">
-            <button class="primary" onclick="computeMD5()">Compute MD5 Hash</button>
-            <div id="md5-steps" class="steps-panel">// MD5 steps</div>
+            <label>Message</label><input id="md5-message" value="hello world">
+            <div class="btn-group">
+                <button class="primary" onclick="computeMD5UI()">Compute Hash</button>
+                <button onclick="resetMD5()">Reset</button>
+            </div>
+            <div id="md5-steps" class="steps-panel">// MD5 steps will appear here</div>
             <div id="md5-out" class="result-box">Result: </div>
         </div>
     </div>
 </div>
 
 <script>
-    // MD5 constants
-    const S = [
-        7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
-        5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
-        4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
-        6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21
-    ];
-
-    const K = [
-        0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
-        0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
-        0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
-        0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
-        0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa,
-        0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
-        0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed,
-        0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a,
-        0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c,
-        0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70,
-        0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05,
-        0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665,
-        0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039,
-        0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
-        0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
-        0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
-    ];
-
-    function leftRotate(value, amount) {
-        return ((value << amount) | (value >>> (32 - amount))) & 0xFFFFFFFF;
-    }
-
-    function md5Hash(message, showSteps = true) {
-        let steps = showSteps ? [] : null;
-
-        // Convert message to bytes
-        let msgBytes = new TextEncoder().encode(message);
-        let msgLen = msgBytes.length;
-
-        // Step 1: Append padding
-        let padded = new Uint8Array(Math.floor((msgLen + 8) / 64 + 1) * 64);
-        padded.set(msgBytes);
-        padded[msgLen] = 0x80;
-
-        // Append length in bits (little-endian)
-        let lenBits = msgLen * 8;
-        for (let i = 0; i < 8; i++) {
-            padded[padded.length - 8 + i] = (lenBits >>> (i * 8)) & 0xFF;
-        }
-
-        if (showSteps) {
-            steps.push("Step 1: Padding the message");
-            steps.push(`Original message length: ${msgLen} bytes`);
-            steps.push(`Padded message length: ${padded.length} bytes`);
-        }
-
-        // Initialize MD5 state
-        let h0 = 0x67452301;
-        let h1 = 0xefcdab89;
-        let h2 = 0x98badcfe;
-        let h3 = 0x10325476;
-
-        if (showSteps) {
-            steps.push("Step 2: Initialize MD5 state");
-            steps.push(`h0 = ${h0.toString(16).padStart(8, '0')}`);
-            steps.push(`h1 = ${h1.toString(16).padStart(8, '0')}`);
-            steps.push(`h2 = ${h2.toString(16).padStart(8, '0')}`);
-            steps.push(`h3 = ${h3.toString(16).padStart(8, '0')}`);
-        }
-
-        // Process in 512-bit chunks
-        for (let chunkStart = 0; chunkStart < padded.length; chunkStart += 64) {
-            let chunk = padded.slice(chunkStart, chunkStart + 64);
-            let w = new Array(16);
-            for (let i = 0; i < 16; i++) {
-                w[i] = (chunk[i*4]) | (chunk[i*4+1] << 8) | (chunk[i*4+2] << 16) | (chunk[i*4+3] << 24);
-            }
-
-            if (showSteps) {
-                steps.push(`\nProcessing chunk ${chunkStart/64 + 1}`);
-                steps.push("Message schedule (w[0..15]):");
-                for (let i = 0; i < 16; i++) {
-                    steps.push(`w[${i}] = ${w[i].toString(16).padStart(8, '0')}`);
-                }
-            }
-
-            let a = h0, b = h1, c = h2, d = h3;
-
-            if (showSteps) {
-                steps.push("Initial a,b,c,d for this chunk:");
-                steps.push(`a = ${a.toString(16).padStart(8, '0')}, b = ${b.toString(16).padStart(8, '0')}, c = ${c.toString(16).padStart(8, '0')}, d = ${d.toString(16).padStart(8, '0')}`);
-            }
-
-            // Main loop
-            for (let i = 0; i < 64; i++) {
-                let f, g;
-                if (i < 16) {
-                    f = (b & c) | (~b & d);
-                    g = i;
-                } else if (i < 32) {
-                    f = (d & b) | (~d & c);
-                    g = (5 * i + 1) % 16;
-                } else if (i < 48) {
-                    f = b ^ c ^ d;
-                    g = (3 * i + 5) % 16;
-                } else {
-                    f = c ^ (b | ~d);
-                    g = (7 * i) % 16;
-                }
-
-                f = (f + a + K[i] + w[g]) & 0xFFFFFFFF;
-                a = d;
-                d = c;
-                c = b;
-                b = (b + leftRotate(f, S[i])) & 0xFFFFFFFF;
-
-                if (showSteps && (i % 4 == 0 || i == 63)) {
-                    steps.push(`Round ${Math.floor(i/16) + 1}, step ${i%16 + 1}: a=${a.toString(16).padStart(8, '0')}, b=${b.toString(16).padStart(8, '0')}, c=${c.toString(16).padStart(8, '0')}, d=${d.toString(16).padStart(8, '0')}`);
-                }
-            }
-
-            // Add to result
-            h0 = (h0 + a) & 0xFFFFFFFF;
-            h1 = (h1 + b) & 0xFFFFFFFF;
-            h2 = (h2 + c) & 0xFFFFFFFF;
-            h3 = (h3 + d) & 0xFFFFFFFF;
-
-            if (showSteps) {
-                steps.push("After adding chunk:");
-                steps.push(`h0 = ${h0.toString(16).padStart(8, '0')}, h1 = ${h1.toString(16).padStart(8, '0')}, h2 = ${h2.toString(16).padStart(8, '0')}, h3 = ${h3.toString(16).padStart(8, '0')}`);
-            }
-        }
-
-        // Produce final hash
-        let digest = new Uint8Array(16);
-        digest[0] = h0 & 0xFF; digest[1] = (h0 >>> 8) & 0xFF; digest[2] = (h0 >>> 16) & 0xFF; digest[3] = (h0 >>> 24) & 0xFF;
-        digest[4] = h1 & 0xFF; digest[5] = (h1 >>> 8) & 0xFF; digest[6] = (h1 >>> 16) & 0xFF; digest[7] = (h1 >>> 24) & 0xFF;
-        digest[8] = h2 & 0xFF; digest[9] = (h2 >>> 8) & 0xFF; digest[10] = (h2 >>> 16) & 0xFF; digest[11] = (h2 >>> 24) & 0xFF;
-        digest[12] = h3 & 0xFF; digest[13] = (h3 >>> 8) & 0xFF; digest[14] = (h3 >>> 16) & 0xFF; digest[15] = (h3 >>> 24) & 0xFF;
-
-        let hashHex = Array.from(digest, b => b.toString(16).padStart(2, '0')).join('');
-
-        if (showSteps) {
-            steps.push("\nFinal MD5 hash:");
-            steps.push(hashHex);
-        }
-
-        return { hash: hashHex, steps: steps };
-    }
-
-    function computeMD5() {
-        let message = document.getElementById('md5-message').value;
-        let result = md5Hash(message);
-        document.getElementById('md5-steps').innerText = result.steps.join('\n');
-        document.getElementById('md5-out').innerText = 'MD5 Hash: ' + result.hash;
-    }
-
     // ---------- SIDEBAR HELPERS ----------
     function toggleSub(header) {
         let s = header.nextElementSibling;
@@ -501,8 +417,8 @@
         event.target.classList.add('active');
         let names = {
             vigenere: 'Vigenère', affine: 'Affine', playfair: 'Playfair',
-            fermat: 'Fermat', euclid: 'Euclid', des: 'DES (full trace)', aes: 'AES-128',
-            rsa: 'RSA (full step‑by‑step)', md5: 'MD5'
+            fermat: 'Fermat', euclid: 'Euclid', des: 'DES (full trace)', aes: 'AES-128', cmac: 'CMAC',
+            rsa: 'RSA (full step‑by‑step)', md5: 'MD5 Hash Function'
         };
         document.getElementById('current-ex').innerText =
             name === 'diffie' ? 'Diffie-Hellman Key Exchange' : (names[name] || name);
@@ -758,6 +674,121 @@
     }
 
     // ############################################################
+    // # EX4: AES-CMAC
+    // ############################################################
+    function xorByteBlocks(a, b) {
+        return a.map((value, index) => value ^ b[index]);
+    }
+
+    function leftShift128(block) {
+        let out = new Array(16).fill(0);
+        let carry = 0;
+        for (let i = 15; i >= 0; i--) {
+            out[i] = ((block[i] << 1) & 0xff) | carry;
+            carry = (block[i] & 0x80) ? 1 : 0;
+        }
+        return out;
+    }
+
+    function generateAesCmacSubkeys(keyBytes) {
+        let zeroBlock = new Array(16).fill(0);
+        let l = aesEncryptBlock128(zeroBlock, keyBytes);
+        let k1 = leftShift128(l);
+        if (l[0] & 0x80) k1[15] ^= 0x87;
+
+        let k2 = leftShift128(k1);
+        if (k1[0] & 0x80) k2[15] ^= 0x87;
+
+        return { l, k1, k2 };
+    }
+
+    function padCmacBlock(block) {
+        let padded = block.slice();
+        padded.push(0x80);
+        while (padded.length < 16) padded.push(0x00);
+        return padded;
+    }
+
+    function computeCMAC(message, keyHex) {
+        if (!/^[0-9a-fA-F]{32}$/.test(keyHex)) {
+            throw new Error('AES-128 key must be exactly 32 hexadecimal characters.');
+        }
+
+        let keyBytes = hexToBytes(keyHex);
+        let msgBytes = Array.from(new TextEncoder().encode(message));
+        let steps = [];
+        let subkeys = generateAesCmacSubkeys(keyBytes);
+        let blockCount = Math.ceil(msgBytes.length / 16) || 1;
+        let blocks = [];
+
+        steps.push('Message authentication code');
+        steps.push('CMAC');
+        steps.push('');
+        steps.push('Aim: To implement AES based message authentication code.');
+        steps.push('');
+        steps.push(`Message bytes: ${msgBytes.length ? bytesToHex(msgBytes) : '(empty)'}`);
+        steps.push(`AES key: ${keyHex.toLowerCase()}`);
+        steps.push('');
+        steps.push(`L  = AES_K(0^128) = ${bytesToHex(subkeys.l)}`);
+        steps.push(`K1 = ${bytesToHex(subkeys.k1)}`);
+        steps.push(`K2 = ${bytesToHex(subkeys.k2)}`);
+
+        for (let i = 0; i < blockCount; i++) {
+            blocks.push(msgBytes.slice(i * 16, i * 16 + 16));
+        }
+
+        let last = blocks[blocks.length - 1];
+        if (msgBytes.length > 0 && last.length === 16) {
+            blocks[blocks.length - 1] = xorByteBlocks(last, subkeys.k1);
+            steps.push('');
+            steps.push('Final block is complete, so it is XORed with K1.');
+        } else {
+            let padded = padCmacBlock(last);
+            blocks[blocks.length - 1] = xorByteBlocks(padded, subkeys.k2);
+            steps.push('');
+            steps.push(`Final block is padded with 80 then zeros: ${bytesToHex(padded)}`);
+            steps.push('Padded final block is XORed with K2.');
+        }
+
+        let chainingValue = new Array(16).fill(0);
+
+        for (let i = 0; i < blocks.length; i++) {
+            let aesInput = xorByteBlocks(chainingValue, blocks[i]);
+            chainingValue = aesEncryptBlock128(aesInput, keyBytes);
+
+            steps.push('');
+            steps.push(`Block ${i + 1}`);
+            steps.push(`AES input : ${bytesToHex(aesInput)}`);
+            steps.push(`AES output: ${bytesToHex(chainingValue)}`);
+        }
+
+        let cmacValue = bytesToHex(chainingValue);
+        steps.push('');
+        steps.push(`CMAC value: ${cmacValue}`);
+
+        return { cmac: cmacValue, steps: steps.join('\n') };
+    }
+
+    function computeCMACUI() {
+        try {
+            let message = document.getElementById('cmac-message').value;
+            let key = document.getElementById('cmac-key').value.trim();
+            let result = computeCMAC(message, key);
+            document.getElementById('cmac-steps').innerText = result.steps;
+            document.getElementById('cmac-out').innerText = `Result: ${result.cmac}`;
+        } catch (err) {
+            alert(err.message);
+        }
+    }
+
+    function resetCMAC() {
+        document.getElementById('cmac-message').value = 'hello';
+        document.getElementById('cmac-key').value = '2b7e151628aed2a6abf7158809cf4f3c';
+        document.getElementById('cmac-steps').innerText = '// CMAC steps will appear here';
+        document.getElementById('cmac-out').innerText = 'Result: ';
+    }
+
+    // ############################################################
     // # EX2: AES-128 
     // ############################################################
     const SBOX = [
@@ -805,6 +836,68 @@
             xtime(a[0]) ^ a[0] ^ a[1] ^ a[2] ^ xtime(a[3])
         ];
         return b;
+    }
+
+    function aesKeyExpansion128(keyBytes) {
+        let w = [];
+        for (let i = 0; i < 4; i++) w.push(keyBytes.slice(i * 4, i * 4 + 4));
+
+        for (let i = 4; i < 44; i++) {
+            let temp = w[i - 1].slice();
+            if (i % 4 === 0) {
+                temp = [temp[1], temp[2], temp[3], temp[0]];
+                temp = temp.map(b => SBOX[b]);
+                temp[0] ^= RCON[i / 4 - 1];
+            }
+
+            let newWord = [];
+            for (let j = 0; j < 4; j++) newWord[j] = w[i - 4][j] ^ temp[j];
+            w.push(newWord);
+        }
+
+        return w;
+    }
+
+    function aesShiftRows(state) {
+        let shifted = new Array(16);
+        for (let row = 0; row < 4; row++) {
+            for (let col = 0; col < 4; col++) {
+                shifted[row + 4 * col] = state[row + 4 * ((col + row) % 4)];
+            }
+        }
+        return shifted;
+    }
+
+    function aesMixColumnsState(state) {
+        let mixedState = new Array(16);
+        for (let col = 0; col < 4; col++) {
+            let colBytes = [state[4 * col], state[1 + 4 * col], state[2 + 4 * col], state[3 + 4 * col]];
+            let mixed = mixColumn(colBytes);
+            for (let row = 0; row < 4; row++) mixedState[row + 4 * col] = mixed[row];
+        }
+        return mixedState;
+    }
+
+    function aesEncryptBlock128(blockBytes, keyBytes) {
+        if (blockBytes.length !== 16) throw new Error('AES block must be exactly 16 bytes.');
+        if (keyBytes.length !== 16) throw new Error('AES-128 key must be exactly 16 bytes.');
+
+        let w = aesKeyExpansion128(keyBytes);
+        let state = blockBytes.slice();
+        let roundKey = w.slice(0, 4).flat();
+
+        for (let i = 0; i < 16; i++) state[i] ^= roundKey[i];
+
+        for (let r = 1; r <= 10; r++) {
+            for (let i = 0; i < 16; i++) state[i] = SBOX[state[i]];
+            state = aesShiftRows(state);
+            if (r < 10) state = aesMixColumnsState(state);
+
+            roundKey = w.slice(r * 4, r * 4 + 4).flat();
+            for (let i = 0; i < 16; i++) state[i] ^= roundKey[i];
+        }
+
+        return state;
     }
 
     function runAesFullTrace() {
@@ -1139,6 +1232,228 @@
         document.getElementById('dh-b').value = '15';
         document.getElementById('dh-steps').innerText = '// Diffie-Hellman steps will appear here';
         document.getElementById('dh-out').innerText = 'Result: ';
+    }
+
+    // ---------- MD5 Functions ----------
+    function addUnsigned(lX, lY) {
+        var lX4, lY4, lX8, lY8, lResult;
+        lX8 = (lX & 0x80000000);
+        lY8 = (lY & 0x80000000);
+        lX4 = (lX & 0x40000000);
+        lY4 = (lY & 0x40000000);
+        lResult = (lX & 0x3FFFFFFF) + (lY & 0x3FFFFFFF);
+        if (lX4 & lY4) {
+            return (lResult ^ 0x80000000 ^ lX8 ^ lY8);
+        }
+        if (lX4 | lY4) {
+            if (lResult & 0x40000000) {
+                return (lResult ^ 0xC0000000 ^ lX8 ^ lY8);
+            } else {
+                return (lResult ^ 0x40000000 ^ lX8 ^ lY8);
+            }
+        } else {
+            return (lResult ^ lX8 ^ lY8);
+        }
+    }
+
+    function leftRotate(value, shift) {
+        return (value << shift) | (value >>> (32 - shift));
+    }
+
+    function F(x, y, z) { return (x & y) | (~x & z); }
+    function G(x, y, z) { return (x & z) | (y & ~z); }
+    function H(x, y, z) { return x ^ y ^ z; }
+    function I(x, y, z) { return y ^ (x | ~z); }
+
+    function FF(a, b, c, d, x, s, ac) {
+        a = addUnsigned(a, addUnsigned(addUnsigned(F(b, c, d), x), ac));
+        return addUnsigned(leftRotate(a, s), b);
+    }
+
+    function GG(a, b, c, d, x, s, ac) {
+        a = addUnsigned(a, addUnsigned(addUnsigned(G(b, c, d), x), ac));
+        return addUnsigned(leftRotate(a, s), b);
+    }
+
+    function HH(a, b, c, d, x, s, ac) {
+        a = addUnsigned(a, addUnsigned(addUnsigned(H(b, c, d), x), ac));
+        return addUnsigned(leftRotate(a, s), b);
+    }
+
+    function II(a, b, c, d, x, s, ac) {
+        a = addUnsigned(a, addUnsigned(addUnsigned(I(b, c, d), x), ac));
+        return addUnsigned(leftRotate(a, s), b);
+    }
+
+    function convertToWordArray(message) {
+        var messageLength = message.length;
+        var numberOfWordsTemp1 = messageLength + 8;
+        var numberOfWordsTemp2 = (numberOfWordsTemp1 - (numberOfWordsTemp1 % 64)) / 64;
+        var numberOfWords = (numberOfWordsTemp2 + 1) * 16;
+        var wordArray = new Array(numberOfWords - 1);
+        for (var i = 0; i < numberOfWords - 1; i++) {
+            wordArray[i] = 0;
+        }
+        var bytePosition = 0;
+        var byteCount = 0;
+        while (byteCount < messageLength) {
+            var byteCountTemp = (byteCount - (byteCount % 4)) / 4;
+            bytePosition = (byteCount % 4) * 8;
+            wordArray[byteCountTemp] = (wordArray[byteCountTemp] | (message.charCodeAt(byteCount) << bytePosition));
+            byteCount++;
+        }
+        var byteCountTemp = (byteCount - (byteCount % 4)) / 4;
+        bytePosition = (byteCount % 4) * 8;
+        wordArray[byteCountTemp] = wordArray[byteCountTemp] | (0x80 << bytePosition);
+        wordArray[numberOfWords - 2] = messageLength << 3;
+        wordArray[numberOfWords - 1] = messageLength >>> 29;
+        return wordArray;
+    }
+
+    function wordToHex(value) {
+        var hex = '';
+        for (var i = 0; i <= 3; i++) {
+            var byte = (value >>> (i * 8)) & 255;
+            hex += ('0' + byte.toString(16)).slice(-2);
+        }
+        return hex;
+    }
+
+    function computeMD5(message) {
+        var steps = [];
+        steps.push("Starting MD5 computation for message: \"" + message + "\"");
+        steps.push("");
+
+        var x = convertToWordArray(message);
+        steps.push("1. Preprocessing (Padding):");
+        steps.push("   - Original message length: " + message.length + " bytes (" + (message.length * 8) + " bits)");
+        steps.push("   - Appended 0x80 (1 bit followed by 7 zeros)");
+        steps.push("   - Padded with zeros to make length ≡ 448 mod 512 bits");
+        steps.push("   - Appended original length as 64-bit little-endian: " + (message.length << 3) + " (low 32 bits), " + (message.length >>> 29) + " (high 32 bits)");
+        steps.push("   - Total padded message: " + x.length + " words (512 bits per chunk)");
+        steps.push("");
+
+        var a = 0x67452301;
+        var b = 0xEFCDAB89;
+        var c = 0x98BADCFE;
+        var d = 0x10325476;
+        steps.push("2. Initialize MD Buffers:");
+        steps.push("   A = 0x" + a.toString(16));
+        steps.push("   B = 0x" + b.toString(16));
+        steps.push("   C = 0x" + c.toString(16));
+        steps.push("   D = 0x" + d.toString(16));
+        steps.push("");
+
+        for (var i = 0; i < x.length; i += 16) {
+            steps.push("3. Processing Chunk " + (i / 16 + 1) + " (words " + i + " to " + (i + 15) + "):");
+            steps.push("   Chunk words: " + x.slice(i, i + 16).map(w => "0x" + w.toString(16).padStart(8, '0')).join(", "));
+            steps.push("");
+
+            var AA = a, BB = b, CC = c, DD = d;
+            steps.push("   Round 1-16 (F function):");
+            var round = 1;
+            a = FF(a, b, c, d, x[i + 0], 7, 0xD76AA478); steps.push("     " + round++ + ". A = FF(A,B,C,D,x[0],7,0xD76AA478) -> 0x" + a.toString(16));
+            d = FF(d, a, b, c, x[i + 1], 12, 0xE8C7B756); steps.push("     " + round++ + ". D = FF(D,A,B,C,x[1],12,0xE8C7B756) -> 0x" + d.toString(16));
+            c = FF(c, d, a, b, x[i + 2], 17, 0x242070DB); steps.push("     " + round++ + ". C = FF(C,D,A,B,x[2],17,0x242070DB) -> 0x" + c.toString(16));
+            b = FF(b, c, d, a, x[i + 3], 22, 0xC1BDCEEE); steps.push("     " + round++ + ". B = FF(B,C,D,A,x[3],22,0xC1BDCEEE) -> 0x" + b.toString(16));
+            a = FF(a, b, c, d, x[i + 4], 7, 0xF57C0FAF); steps.push("     " + round++ + ". A = FF(A,B,C,D,x[4],7,0xF57C0FAF) -> 0x" + a.toString(16));
+            d = FF(d, a, b, c, x[i + 5], 12, 0x4787C62A); steps.push("     " + round++ + ". D = FF(D,A,B,C,x[5],12,0x4787C62A) -> 0x" + d.toString(16));
+            c = FF(c, d, a, b, x[i + 6], 17, 0xA8304613); steps.push("     " + round++ + ". C = FF(C,D,A,B,x[6],17,0xA8304613) -> 0x" + c.toString(16));
+            b = FF(b, c, d, a, x[i + 7], 22, 0xFD469501); steps.push("     " + round++ + ". B = FF(B,C,D,A,x[7],22,0xFD469501) -> 0x" + b.toString(16));
+            a = FF(a, b, c, d, x[i + 8], 7, 0x698098D8); steps.push("     " + round++ + ". A = FF(A,B,C,D,x[8],7,0x698098D8) -> 0x" + a.toString(16));
+            d = FF(d, a, b, c, x[i + 9], 12, 0x8B44F7AF); steps.push("     " + round++ + ". D = FF(D,A,B,C,x[9],12,0x8B44F7AF) -> 0x" + d.toString(16));
+            c = FF(c, d, a, b, x[i + 10], 17, 0xFFFF5BB1); steps.push("     " + round++ + ". C = FF(C,D,A,B,x[10],17,0xFFFF5BB1) -> 0x" + c.toString(16));
+            b = FF(b, c, d, a, x[i + 11], 22, 0x895CD7BE); steps.push("     " + round++ + ". B = FF(B,C,D,A,x[11],22,0x895CD7BE) -> 0x" + b.toString(16));
+            a = FF(a, b, c, d, x[i + 12], 7, 0x6B901122); steps.push("     " + round++ + ". A = FF(A,B,C,D,x[12],7,0x6B901122) -> 0x" + a.toString(16));
+            d = FF(d, a, b, c, x[i + 13], 12, 0xFD987193); steps.push("     " + round++ + ". D = FF(D,A,B,C,x[13],12,0xFD987193) -> 0x" + d.toString(16));
+            c = FF(c, d, a, b, x[i + 14], 17, 0xA679438E); steps.push("     " + round++ + ". C = FF(C,D,A,B,x[14],17,0xA679438E) -> 0x" + c.toString(16));
+            b = FF(b, c, d, a, x[i + 15], 22, 0x49B40821); steps.push("     " + round++ + ". B = FF(B,C,D,A,x[15],22,0x49B40821) -> 0x" + b.toString(16));
+
+            steps.push("   Round 17-32 (G function):");
+            a = GG(a, b, c, d, x[i + 1], 5, 0xF61E2562); steps.push("     " + round++ + ". A = GG(A,B,C,D,x[1],5,0xF61E2562) -> 0x" + a.toString(16));
+            d = GG(d, a, b, c, x[i + 6], 9, 0xC040B340); steps.push("     " + round++ + ". D = GG(D,A,B,C,x[6],9,0xC040B340) -> 0x" + d.toString(16));
+            c = GG(c, d, a, b, x[i + 11], 14, 0x265E5A51); steps.push("     " + round++ + ". C = GG(C,D,A,B,x[11],14,0x265E5A51) -> 0x" + c.toString(16));
+            b = GG(b, c, d, a, x[i + 0], 20, 0xE9B6C7AA); steps.push("     " + round++ + ". B = GG(B,C,D,A,x[0],20,0xE9B6C7AA) -> 0x" + b.toString(16));
+            a = GG(a, b, c, d, x[i + 5], 5, 0xD62F105D); steps.push("     " + round++ + ". A = GG(A,B,C,D,x[5],5,0xD62F105D) -> 0x" + a.toString(16));
+            d = GG(d, a, b, c, x[i + 10], 9, 0x02441453); steps.push("     " + round++ + ". D = GG(D,A,B,C,x[10],9,0x02441453) -> 0x" + d.toString(16));
+            c = GG(c, d, a, b, x[i + 15], 14, 0xD8A1E681); steps.push("     " + round++ + ". C = GG(C,D,A,B,x[15],14,0xD8A1E681) -> 0x" + c.toString(16));
+            b = GG(b, c, d, a, x[i + 4], 20, 0xE7D3FBC8); steps.push("     " + round++ + ". B = GG(B,C,D,A,x[4],20,0xE7D3FBC8) -> 0x" + b.toString(16));
+            a = GG(a, b, c, d, x[i + 9], 5, 0x21E1CDE6); steps.push("     " + round++ + ". A = GG(A,B,C,D,x[9],5,0x21E1CDE6) -> 0x" + a.toString(16));
+            d = GG(d, a, b, c, x[i + 14], 9, 0xC33707D6); steps.push("     " + round++ + ". D = GG(D,A,B,C,x[14],9,0xC33707D6) -> 0x" + d.toString(16));
+            c = GG(c, d, a, b, x[i + 3], 14, 0xF4D50D87); steps.push("     " + round++ + ". C = GG(C,D,A,B,x[3],14,0xF4D50D87) -> 0x" + c.toString(16));
+            b = GG(b, c, d, a, x[i + 8], 20, 0x455A14ED); steps.push("     " + round++ + ". B = GG(B,C,D,A,x[8],20,0x455A14ED) -> 0x" + b.toString(16));
+            a = GG(a, b, c, d, x[i + 13], 5, 0xA9E3E905); steps.push("     " + round++ + ". A = GG(A,B,C,D,x[13],5,0xA9E3E905) -> 0x" + a.toString(16));
+            d = GG(d, a, b, c, x[i + 2], 9, 0xFCEFA3F8); steps.push("     " + round++ + ". D = GG(D,A,B,C,x[2],9,0xFCEFA3F8) -> 0x" + d.toString(16));
+            c = GG(c, d, a, b, x[i + 7], 14, 0x676F02D9); steps.push("     " + round++ + ". C = GG(C,D,A,B,x[7],14,0x676F02D9) -> 0x" + c.toString(16));
+            b = GG(b, c, d, a, x[i + 12], 20, 0x8D2A4C8A); steps.push("     " + round++ + ". B = GG(B,C,D,A,x[12],20,0x8D2A4C8A) -> 0x" + b.toString(16));
+
+            steps.push("   Round 33-48 (H function):");
+            a = HH(a, b, c, d, x[i + 5], 4, 0xFFFA3942); steps.push("     " + round++ + ". A = HH(A,B,C,D,x[5],4,0xFFFA3942) -> 0x" + a.toString(16));
+            d = HH(d, a, b, c, x[i + 8], 11, 0x8771F681); steps.push("     " + round++ + ". D = HH(D,A,B,C,x[8],11,0x8771F681) -> 0x" + d.toString(16));
+            c = HH(c, d, a, b, x[i + 11], 16, 0x6D9D6122); steps.push("     " + round++ + ". C = HH(C,D,A,B,x[11],16,0x6D9D6122) -> 0x" + c.toString(16));
+            b = HH(b, c, d, a, x[i + 14], 23, 0xFDE5380C); steps.push("     " + round++ + ". B = HH(B,C,D,A,x[14],23,0xFDE5380C) -> 0x" + b.toString(16));
+            a = HH(a, b, c, d, x[i + 1], 4, 0xA4BEEA44); steps.push("     " + round++ + ". A = HH(A,B,C,D,x[1],4,0xA4BEEA44) -> 0x" + a.toString(16));
+            d = HH(d, a, b, c, x[i + 4], 11, 0x4BDECFA9); steps.push("     " + round++ + ". D = HH(D,A,B,C,x[4],11,0x4BDECFA9) -> 0x" + d.toString(16));
+            c = HH(c, d, a, b, x[i + 7], 16, 0xF6BB4B60); steps.push("     " + round++ + ". C = HH(C,D,A,B,x[7],16,0xF6BB4B60) -> 0x" + c.toString(16));
+            b = HH(b, c, d, a, x[i + 10], 23, 0xBEBFBC70); steps.push("     " + round++ + ". B = HH(B,C,D,A,x[10],23,0xBEBFBC70) -> 0x" + b.toString(16));
+            a = HH(a, b, c, d, x[i + 13], 4, 0x289B7EC6); steps.push("     " + round++ + ". A = HH(A,B,C,D,x[13],4,0x289B7EC6) -> 0x" + a.toString(16));
+            d = HH(d, a, b, c, x[i + 0], 11, 0xEAA127FA); steps.push("     " + round++ + ". D = HH(D,A,B,C,x[0],11,0xEAA127FA) -> 0x" + d.toString(16));
+            c = HH(c, d, a, b, x[i + 3], 16, 0xD4EF3085); steps.push("     " + round++ + ". C = HH(C,D,A,B,x[3],16,0xD4EF3085) -> 0x" + c.toString(16));
+            b = HH(b, c, d, a, x[i + 6], 23, 0x04881D05); steps.push("     " + round++ + ". B = HH(B,C,D,A,x[6],23,0x04881D05) -> 0x" + b.toString(16));
+            a = HH(a, b, c, d, x[i + 9], 4, 0xD9D4D039); steps.push("     " + round++ + ". A = HH(A,B,C,D,x[9],4,0xD9D4D039) -> 0x" + a.toString(16));
+            d = HH(d, a, b, c, x[i + 12], 11, 0xE6DB99E5); steps.push("     " + round++ + ". D = HH(D,A,B,C,x[12],11,0xE6DB99E5) -> 0x" + d.toString(16));
+            c = HH(c, d, a, b, x[i + 15], 16, 0x1FA27CF8); steps.push("     " + round++ + ". C = HH(C,D,A,B,x[15],16,0x1FA27CF8) -> 0x" + c.toString(16));
+            b = HH(b, c, d, a, x[i + 2], 23, 0xC4AC5665); steps.push("     " + round++ + ". B = HH(B,C,D,A,x[2],23,0xC4AC5665) -> 0x" + b.toString(16));
+
+            steps.push("   Round 49-64 (I function):");
+            a = II(a, b, c, d, x[i + 0], 6, 0xF4292244); steps.push("     " + round++ + ". A = II(A,B,C,D,x[0],6,0xF4292244) -> 0x" + a.toString(16));
+            d = II(d, a, b, c, x[i + 7], 10, 0x432AFF97); steps.push("     " + round++ + ". D = II(D,A,B,C,x[7],10,0x432AFF97) -> 0x" + d.toString(16));
+            c = II(c, d, a, b, x[i + 14], 15, 0xAB9423A7); steps.push("     " + round++ + ". C = II(C,D,A,B,x[14],15,0xAB9423A7) -> 0x" + c.toString(16));
+            b = II(b, c, d, a, x[i + 5], 21, 0xFC93A039); steps.push("     " + round++ + ". B = II(B,C,D,A,x[5],21,0xFC93A039) -> 0x" + b.toString(16));
+            a = II(a, b, c, d, x[i + 12], 6, 0x655B59C3); steps.push("     " + round++ + ". A = II(A,B,C,D,x[12],6,0x655B59C3) -> 0x" + a.toString(16));
+            d = II(d, a, b, c, x[i + 3], 10, 0x8F0CCC92); steps.push("     " + round++ + ". D = II(D,A,B,C,x[3],10,0x8F0CCC92) -> 0x" + d.toString(16));
+            c = II(c, d, a, b, x[i + 10], 15, 0xFFEFF47D); steps.push("     " + round++ + ". C = II(C,D,A,B,x[10],15,0xFFEFF47D) -> 0x" + c.toString(16));
+            b = II(b, c, d, a, x[i + 1], 21, 0x85845DD1); steps.push("     " + round++ + ". B = II(B,C,D,A,x[1],21,0x85845DD1) -> 0x" + b.toString(16));
+            a = II(a, b, c, d, x[i + 8], 6, 0x6FA87E4F); steps.push("     " + round++ + ". A = II(A,B,C,D,x[8],6,0x6FA87E4F) -> 0x" + a.toString(16));
+            d = II(d, a, b, c, x[i + 15], 10, 0xFE2CE6E0); steps.push("     " + round++ + ". D = II(D,A,B,C,x[15],10,0xFE2CE6E0) -> 0x" + d.toString(16));
+            c = II(c, d, a, b, x[i + 6], 15, 0xA3014314); steps.push("     " + round++ + ". C = II(C,D,A,B,x[6],15,0xA3014314) -> 0x" + c.toString(16));
+            b = II(b, c, d, a, x[i + 13], 21, 0x4E0811A1); steps.push("     " + round++ + ". B = II(B,C,D,A,x[13],21,0x4E0811A1) -> 0x" + b.toString(16));
+            a = II(a, b, c, d, x[i + 4], 6, 0xF7537E82); steps.push("     " + round++ + ". A = II(A,B,C,D,x[4],6,0xF7537E82) -> 0x" + a.toString(16));
+            d = II(d, a, b, c, x[i + 11], 10, 0xBD3AF235); steps.push("     " + round++ + ". D = II(D,A,B,C,x[11],10,0xBD3AF235) -> 0x" + d.toString(16));
+            c = II(c, d, a, b, x[i + 2], 15, 0x2AD7D2BB); steps.push("     " + round++ + ". C = II(C,D,A,B,x[2],15,0x2AD7D2BB) -> 0x" + c.toString(16));
+            b = II(b, c, d, a, x[i + 9], 21, 0xEB86D391); steps.push("     " + round++ + ". B = II(B,C,D,A,x[9],21,0xEB86D391) -> 0x" + b.toString(16));
+
+            a = addUnsigned(a, AA);
+            b = addUnsigned(b, BB);
+            c = addUnsigned(c, CC);
+            d = addUnsigned(d, DD);
+            steps.push("   Add back to main buffers:");
+            steps.push("     A += AA -> 0x" + a.toString(16));
+            steps.push("     B += BB -> 0x" + b.toString(16));
+            steps.push("     C += CC -> 0x" + c.toString(16));
+            steps.push("     D += DD -> 0x" + d.toString(16));
+            steps.push("");
+        }
+
+        steps.push("4. Finalize Hash:");
+        steps.push("   Concatenate A, B, C, D as little-endian hex.");
+        var hash = (wordToHex(a) + wordToHex(b) + wordToHex(c) + wordToHex(d)).toLowerCase();
+        steps.push("   Final Hash: " + hash);
+
+        return { hash: hash, steps: steps.join("\n") };
+    }
+
+    function computeMD5UI() {
+        let message = document.getElementById('md5-message').value;
+        let result = computeMD5(message);
+        document.getElementById('md5-steps').innerText = result.steps;
+        document.getElementById('md5-out').innerText = `Result: ${result.hash}`;
+    }
+
+    function resetMD5() {
+        document.getElementById('md5-message').value = 'hello world';
+        document.getElementById('md5-steps').innerText = '// MD5 steps will appear here';
+        document.getElementById('md5-out').innerText = 'Result: ';
     }
 
     window.onload = function() {

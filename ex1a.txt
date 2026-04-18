@@ -1,0 +1,202 @@
+1. Vigenere Cipher
+ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+def char_to_num(c):
+    return ALPHABET.index(c)
+
+def num_to_char(n):
+    return ALPHABET[n % 26]
+
+def generate_key(text, key):
+    result = ""
+    for i in range(len(text)):
+        result += key[i % len(key)]
+    return result
+
+def vigenere_cipher(plaintext, key):
+    plaintext = plaintext.upper().replace(' ', '')
+    key = key.upper().replace(' ', '')
+
+    full_key = generate_key(plaintext, key)
+
+    # Encryption
+    ciphertext = ""
+    for i in range(len(plaintext)):
+        p = char_to_num(plaintext[i])
+        k = char_to_num(full_key[i])
+        ciphertext += num_to_char((p + k) % 26)
+
+    # Decryption
+    final_text = ""
+    for i in range(len(ciphertext)):
+        c = char_to_num(ciphertext[i])
+        k = char_to_num(full_key[i])
+        final_text += num_to_char((c - k + 26) % 26)
+
+    print("\n--- VIGENERE ---")
+    print("Ciphertext:", ciphertext)
+    print("Decrypted :", final_text)
+
+
+# MAIN
+text = input("Enter plaintext: ")
+key = input("Enter key: ")
+vigenere_cipher(text, key)
+
+2. Playfair Cipher
+ALPHABET = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
+
+def generate_matrix(key):
+    key = key.upper().replace('J','I').replace(' ','')
+    key = ''.join(c for c in key if c.isalpha())
+
+    seen = set()
+    matrix = []
+
+    for ch in key + ALPHABET:
+        if ch not in seen:
+            seen.add(ch)
+            matrix.append(ch)
+
+    return matrix
+
+def find_pos(matrix, ch):
+    idx = matrix.index(ch)
+    return idx//5, idx%5
+
+def get_char(matrix, r, c):
+    return matrix[r*5 + c]
+
+def preprocess(text):
+    text = text.upper().replace('J','I').replace(' ','')
+    text = ''.join(c for c in text if c.isalpha())
+
+    result = []
+    i = 0
+    while i < len(text):
+        a = text[i]
+        b = text[i+1] if i+1 < len(text) else 'X'
+
+        if a == b:
+            result.append(a+'X')
+            i += 1
+        else:
+            result.append(a+b)
+            i += 2
+    return result
+
+def playfair_cipher(text, key):
+    matrix = generate_matrix(key)
+    digraphs = preprocess(text)
+
+    # Encryption
+    ciphertext = ""
+    for pair in digraphs:
+        r1,c1 = find_pos(matrix, pair[0])
+        r2,c2 = find_pos(matrix, pair[1])
+
+        if r1 == r2:
+            ciphertext += get_char(matrix,r1,(c1+1)%5)
+            ciphertext += get_char(matrix,r2,(c2+1)%5)
+        elif c1 == c2:
+            ciphertext += get_char(matrix,(r1+1)%5,c1)
+            ciphertext += get_char(matrix,(r2+1)%5,c2)
+        else:
+            ciphertext += get_char(matrix,r1,c2)
+            ciphertext += get_char(matrix,r2,c1)
+
+    # Decryption
+    final_text = ""
+    for i in range(0,len(ciphertext),2):
+        r1,c1 = find_pos(matrix,ciphertext[i])
+        r2,c2 = find_pos(matrix,ciphertext[i+1])
+
+        if r1 == r2:
+            final_text += get_char(matrix,r1,(c1-1)%5)
+            final_text += get_char(matrix,r2,(c2-1)%5)
+        elif c1 == c2:
+            final_text += get_char(matrix,(r1-1)%5,c1)
+            final_text += get_char(matrix,(r2-1)%5,c2)
+        else:
+            final_text += get_char(matrix,r1,c2)
+            final_text += get_char(matrix,r2,c1)
+
+    print("\n--- PLAYFAIR ---")
+    print("Ciphertext:", ciphertext)
+    print("Decrypted :", final_text)
+
+
+# MAIN
+text = input("Enter plaintext: ")
+key = input("Enter key: ")
+playfair_cipher(text, key)
+
+3. Affine Cipher
+ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+def char_to_num(c):
+    return ALPHABET.index(c)
+
+def num_to_char(n):
+    return ALPHABET[n % 26]
+
+def extended_gcd(a, b):
+    if b == 0:
+        return a,1,0
+    g,x1,y1 = extended_gcd(b,a%b)
+    return g,y1,x1-(a//b)*y1
+
+def affine_cipher(text, alpha, beta):
+    text = text.upper().replace(' ','')
+    
+    g,x,_ = extended_gcd(alpha,26)
+    if g != 1:
+        print("Invalid alpha (no inverse)")
+        return
+
+    alpha_inv = x % 26
+
+    # Encryption
+    ciphertext = ""
+    for ch in text:
+        ciphertext += num_to_char((alpha*char_to_num(ch)+beta)%26)
+
+    # Decryption
+    final_text = ""
+    for ch in ciphertext:
+        final_text += num_to_char((alpha_inv*(char_to_num(ch)-beta))%26)
+
+    print("\n--- AFFINE ---")
+    print("Ciphertext:", ciphertext)
+    print("Decrypted :", final_text)
+
+
+# MAIN
+text = input("Enter plaintext: ")
+alpha = int(input("Enter alpha: "))
+beta = int(input("Enter beta: "))
+affine_cipher(text, alpha, beta)
+
+4. Extended euclidean
+# Extended Euclidean Algorithm
+
+def extended_euclidean(a, b):
+    if b == 0:
+        return a, 1, 0
+    g, x1, y1 = extended_euclidean(b, a % b)
+    x = y1
+    y = x1 - (a // b) * y1
+    return g, x, y
+
+
+# MAIN
+a = int(input("Enter a: "))
+b = int(input("Enter b: "))
+
+g, x, y = extended_euclidean(a, b)
+
+print("\n--- EXTENDED EUCLIDEAN ---")
+print("GCD =", g)
+print("x =", x)
+print("y =", y)
+print(f"{a}*({x}) + {b}*({y}) = {g}")

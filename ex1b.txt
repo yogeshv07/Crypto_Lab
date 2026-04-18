@@ -1,0 +1,64 @@
+# ================= Fermat's Little Theorem =================
+
+# Check if a number is prime
+def is_prime(n: int) -> bool:
+    if n < 2:
+        return False
+    if n == 2:
+        return True
+    if n % 2 == 0:
+        return False
+    i = 3
+    while i * i <= n:
+        if n % i == 0:
+            return False
+        i += 2
+    return True
+
+
+# Modular exponentiation (square & multiply)
+def mod_pow(base: int, exp: int, mod: int) -> int:
+    result = 1
+    base %= mod
+
+    while exp > 0:
+        if exp % 2 == 1:
+            result = (result * base) % mod
+        base = (base * base) % mod
+        exp //= 2
+
+    return result
+
+
+# ================= MAIN =================
+
+def fermat_little_theorem():
+    a = int(input("Enter base (a): "))
+    p = int(input("Enter prime (p): "))
+
+    # Validation
+    if not is_prime(p):
+        print("Not a prime number")
+        return
+
+    if a % p == 0:
+        print("a should not be divisible by p")
+        return
+
+    print("\n--- FORM 1: a^(p-1) ≡ 1 (mod p) ---")
+    result1 = mod_pow(a, p - 1, p)
+    print("Result:", result1)
+
+    print("\n--- FORM 2: a^p ≡ a (mod p) ---")
+    result2 = mod_pow(a, p, p)
+    print("Result:", result2)
+
+    if result1 == 1 and result2 == a % p:
+        print("\nTheorem Verified")
+    else:
+        print("\nTheorem Failed")
+
+
+# RUN
+if __name__ == "__main__":
+    fermat_little_theorem()

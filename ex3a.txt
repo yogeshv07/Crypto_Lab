@@ -1,0 +1,135 @@
+from typing import Optional, Tuple
+
+
+def is_prime(n: int) -> bool:
+    if n <= 1:
+        return False
+    if n <= 3:
+        return True
+    if n % 2 == 0:
+        return False
+    i = 3
+    while i * i <= n:
+        if n % i == 0:
+            return False
+        i += 2
+    return True
+
+
+def euclidean_gcd(a: int, b: int) -> int:
+    while b != 0:
+        a, b = b, a % b
+    return a
+
+
+def extended_gcd(a: int, b: int):
+    if b == 0:
+        return a, 1, 0
+    g, x1, y1 = extended_gcd(b, a % b)
+    x = y1
+    y = x1 - (a // b) * y1
+    return g, x, y
+
+
+def mod_inverse(e: int, phi: int) -> int:
+    g, x, _ = extended_gcd(e, phi)
+    if g != 1:
+        raise ValueError("Modular inverse does not exist")
+    return x % phi
+
+
+def choose_e(phi: int) -> int:
+    e = 3
+    while e < phi:
+        if euclidean_gcd(e, phi) == 1:
+            return e
+        e += 2
+    raise ValueError("No valid e found")
+
+
+#Manual Modular Exponentiation (Square & Multiply)
+def mod_exp(base: int, exponent: int, modulus: int) -> int:
+    result = 1
+    base = base % modulus
+
+    while exponent > 0:
+        if exponent % 2 == 1:
+            result = (result * base) % modulus
+        base = (base * base) % modulus
+        exponent //= 2
+
+    return result
+
+
+def generate_keys(p: int, q: int, e: Optional[int] = None):
+    if not is_prime(p) or not is_prime(q):
+        raise ValueError("p and q must be prime")
+    if p == q:
+        raise ValueError("p and q must be different")
+
+    n = p * q
+    phi = (p - 1) * (q - 1)
+
+    if e is None:
+        e = choose_e(phi)
+    else:
+        if not (1 < e < phi):
+            raise ValueError("Invalid e")
+        if euclidean_gcd(e, phi) != 1:
+            raise ValueError("e must be coprime with phi")
+
+    d = mod_inverse(e, phi)
+
+    print("\n--- Key Generation ---")
+    print("n =", n)
+    print("phi(n) =", phi)
+    print("e =", e)
+    print("d =", d)
+    print("Public Key =", (e, n))
+    print("Private Key =", (d, n))
+
+    return (e, n), (d, n)
+
+
+def encrypt(message: int, public_key: Tuple[int, int]) -> int:
+    e, n = public_key
+    if not (0 <= message < n):
+        raise ValueError("Message must be < n")
+
+    print("\n--- Encryption ---")
+    print("C = M^e mod n")
+
+    c = mod_exp(message, e, n)
+    print("Ciphertext =", c)
+
+    return c
+
+
+def decrypt(ciphertext: int, private_key: Tuple[int, int]) -> int:
+    d, n = private_key
+    if not (0 <= ciphertext < n):
+        raise ValueError("Ciphertext must be < n")
+
+    print("\n--- Decryption ---")
+    print("M = C^d mod n")
+
+    m = mod_exp(ciphertext, d, n)
+    print("Decrypted Message =", m)
+
+    return m
+
+
+# -------- MAIN --------
+
+p = int(input("Enter p: "))
+q = int(input("Enter q: "))
+e = int(input("Enter e (0 for auto): "))
+m = int(input("Enter message: "))
+
+if e == 0:
+    e = None
+
+public_key, private_key = generate_keys(p, q, e)
+
+c = encrypt(m, public_key)
+decrypt(c, private_key)

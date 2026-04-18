@@ -1,0 +1,113 @@
+from typing import Optional
+
+
+def is_prime(n: int) -> bool:
+    if n <= 1:
+        return False
+    if n <= 3:
+        return True
+    if n % 2 == 0:
+        return False
+    i = 3
+    while i * i <= n:
+        if n % i == 0:
+            return False
+        i += 2
+    return True
+
+
+def _prime_factors(n: int):
+    factors = []
+    while n % 2 == 0:
+        factors.append(2)
+        n //= 2
+    f = 3
+    while f * f <= n:
+        while n % f == 0:
+            factors.append(f)
+            n //= f
+        f += 2
+    if n > 1:
+        factors.append(n)
+    return list(set(factors))
+
+
+def is_primitive_root(alpha: int, q: int) -> bool:
+    phi = q - 1
+    factors = _prime_factors(phi)
+
+    for p in factors:
+        if mod_exp(alpha, phi // p, q) == 1:
+            return False
+    return True
+
+
+#Manual Modular Exponentiation
+def mod_exp(base: int, exponent: int, modulus: int) -> int:
+    result = 1
+    base = base % modulus
+
+    while exponent > 0:
+        if exponent % 2 == 1:
+            result = (result * base) % modulus
+        base = (base * base) % modulus
+        exponent //= 2
+
+    return result
+
+
+def generate_public_keys(q: int, alpha: int, xa: int, xb: int):
+    print("\n--- Diffie-Hellman Key Generation ---")
+
+    if not is_prime(q):
+        raise ValueError("q must be prime")
+    if not (1 < alpha < q):
+        raise ValueError("Invalid alpha")
+    if not is_primitive_root(alpha, q):
+        raise ValueError("alpha is not primitive root")
+
+    ya = mod_exp(alpha, xa, q)
+    yb = mod_exp(alpha, xb, q)
+
+    print("Public Values:")
+    print("q =", q)
+    print("alpha =", alpha)
+
+    print("\nPrivate Keys:")
+    print("XA =", xa)
+    print("XB =", xb)
+
+    print("\nPublic Keys:")
+    print("YA =", ya)
+    print("YB =", yb)
+
+    return ya, yb
+
+
+def compute_shared_secret(q: int, xa: int, xb: int, ya: int, yb: int):
+    print("\n--- Shared Secret Computation ---")
+
+    ka = mod_exp(yb, xa, q)
+    kb = mod_exp(ya, xb, q)
+
+    print("KA (computed by A) =", ka)
+    print("KB (computed by B) =", kb)
+
+    if ka == kb:
+        print("Shared Secret Key =", ka)
+    else:
+        print("Error: Keys do not match!")
+
+    return ka
+
+
+# -------- MAIN --------
+
+q = int(input("Enter prime q: "))
+alpha = int(input("Enter primitive root alpha: "))
+xa = int(input("Enter private key XA: "))
+xb = int(input("Enter private key XB: "))
+
+ya, yb = generate_public_keys(q, alpha, xa, xb)
+
+compute_shared_secret(q, xa, xb, ya, yb)

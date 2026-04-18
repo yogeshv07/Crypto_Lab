@@ -1,0 +1,109 @@
+import math
+
+
+_S = [
+    7,12,17,22,7,12,17,22,7,12,17,22,7,12,17,22,
+    5,9,14,20,5,9,14,20,5,9,14,20,5,9,14,20,
+    4,11,16,23,4,11,16,23,4,11,16,23,4,11,16,23,
+    6,10,15,21,6,10,15,21,6,10,15,21,6,10,15,21
+]
+
+_K = [
+    int(abs(math.sin(i + 1)) * (2 ** 32)) & 0xFFFFFFFF
+    for i in range(64)
+]
+
+
+def _left_rotate(value: int, shift: int) -> int:
+    return ((value << shift) | (value >> (32 - shift))) & 0xFFFFFFFF
+
+
+def _pad_message(message_bytes: bytes) -> bytes:
+    original_bit_length = len(message_bytes) * 8
+
+    padded = bytearray(message_bytes)
+    padded.append(0x80)
+
+    while (len(padded) * 8) % 512 != 448:
+        padded.append(0x00)
+
+    padded += original_bit_length.to_bytes(8, byteorder="little")
+    return bytes(padded)
+
+
+def _chunk_words(chunk: bytes):
+    return [
+        int.from_bytes(chunk[i:i+4], byteorder="little")
+        for i in range(0, 64, 4)
+    ]
+
+
+def md5(message: str) -> str:
+    message_bytes = message.encode("utf-8")
+    padded = _pad_message(message_bytes)
+
+    # Initial values
+    a0 = 0x67452301
+    b0 = 0xEFCDAB89
+    c0 = 0x98BADCFE
+    d0 = 0x10325476
+
+    # Process each 512-bit chunk
+    for i in range(0, len(padded), 64):
+        chunk = padded[i:i+64]
+        M = _chunk_words(chunk)
+
+        a, b, c, d = a0, b0, c0, d0
+
+        for i in range(64):
+            if i <= 15:
+                f = (b & c) | (~b & d)
+                g = i
+            elif i <= 31:
+                f = (d & b) | (~d & c)
+                g = (5*i + 1) % 16
+            elif i <= 47:
+                f = b ^ c ^ d
+                g = (3*i + 5) % 16
+            else:
+                f = c ^ (b | ~d)
+                g = (7*i) % 16
+
+            f &= 0xFFFFFFFF
+
+            temp = d
+            d = c
+            c = b
+
+            temp_sum = (a + f + _K[i] + M[g]) & 0xFFFFFFFF
+            b = (b + _left_rotate(temp_sum, _S[i])) & 0xFFFFFFFF
+
+            a = temp
+
+        # Add this chunk's result
+        a0 = (a0 + a) & 0xFFFFFFFF
+        b0 = (b0 + b) & 0xFFFFFFFF
+        c0 = (c0 + c) & 0xFFFFFFFF
+        d0 = (d0 + d) & 0xFFFFFFFF
+
+    # Final digest
+    digest = (
+        a0.to_bytes(4, "little") +
+        b0.to_bytes(4, "little") +
+        c0.to_bytes(4, "little") +
+        d0.to_bytes(4, "little")
+    )
+
+    return digest.hex()
+
+
+# -------- MAIN --------
+
+if __name__ == "__main__":
+    msg = input("Enter message: ")
+
+    print("\n--- MD5 HASH ---")
+    print("Message:", msg)
+
+    result = md5(msg)
+    print("MD5 Digest:", result)
